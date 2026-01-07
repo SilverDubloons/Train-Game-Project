@@ -1,0 +1,19 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "Enemy", menuName = "Scriptable Objects/Enemy")]
+public class Enemy : ScriptableObject
+{
+    public string enemyTag;
+    public string enemyName;
+    public int maxHealth; 
+    [SerializeField] public Limb[] limbs;
+    public Vector2 spriteCenter;
+    public Vector2 totalSize;
+    [SerializeField] public SpawningPattern spawningPattern;
+
+    public CombatSpace GetSpawnSpace(List<CombatSpace> availableSpaces, Vector2Int boardSize)
+    {
+        return spawningPattern.GetSpawnSpace(availableSpaces, boardSize);
+    }
+}

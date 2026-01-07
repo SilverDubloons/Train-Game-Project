@@ -50,13 +50,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Backdrop
   backdropShape: 0
-  backdropStyle: 0
+  backdropUIElementType: 0
   style: {fileID: 11400000, guid: 7476368857fbf3e4698496afb0428bd8, type: 2}
   themeManager: {fileID: 11400000, guid: 53caabd637f2f4f4e807f83a48def1b2, type: 2}
   rt: {fileID: 8882855663465006539}
   rtShadow: {fileID: 5124121835459104683}
+  rtBackdrop: {fileID: 3703369902993849897}
   backdrop: {fileID: 4848127321934749482}
   shadow: {fileID: 5173521970026226711}
+  visibilityObject: {fileID: 6195253839262280099}
 --- !u!1 &344350369097712013
 GameObject:
   m_ObjectHideFlags: 0

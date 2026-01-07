@@ -17,3 +17,7 @@ MonoBehaviour:
   backButtonActive: {r: 0.7987421, g: 0.74206436, b: 0.032652836, a: 1}
   warningButtonActive: {r: 1, g: 0.11635202, b: 0.11635202, a: 1}
   buttonSpecialState: {r: 0, g: 0.72955966, b: 0, a: 1}
+  buttonDisabled: {r: 0.408805, g: 0.408805, b: 0.408805, a: 1}
+  buttonMouseOver: {r: 0.654088, g: 0.654088, b: 0.654088, a: 1}
+  combatSpace: {r: 1, g: 0.9595495, b: 0.6156863, a: 1}
+  enemyMouseOver: {r: 0, g: 1, b: 0, a: 1}
