@@ -6,6 +6,7 @@ public class RNG : MonoBehaviour
     public RandomNumbers shuffle;	// for shuffling deck
     public RandomNumbers shop;		// for determining items available in shop
     public RandomNumbers starting;	// for start of game, such as adding random cards to player deck
+    public RandomNumbers combat;
 
     public static RNG instance;
 
@@ -18,6 +19,7 @@ public class RNG : MonoBehaviour
         shuffle.ChangeSeed(newSeed);
         shop.ChangeSeed(newSeed);
         starting.ChangeSeed(newSeed);
+        combat.ChangeSeed(newSeed);
     }
     public void LoadCallCountsFromString(int seed, string callCountsString)
     {
@@ -25,9 +27,10 @@ public class RNG : MonoBehaviour
         shuffle.RestoreState(seed, int.Parse(callCountsData[0]));
         shop.RestoreState(seed, int.Parse(callCountsData[1]));
         starting.RestoreState(seed, int.Parse(callCountsData[2]));
+        combat.RestoreState(seed, int.Parse(callCountsData[2]));
     }
     public String GetCallCountsAsString()
     {
-        return $"{shuffle.GetCurrentCallCount()}%{shop.GetCurrentCallCount()}%{starting.GetCurrentCallCount()}%";
+        return $"{shuffle.GetCurrentCallCount()}%{shop.GetCurrentCallCount()}%{starting.GetCurrentCallCount()}%{shop.GetCurrentCallCount()}";
     }
 }

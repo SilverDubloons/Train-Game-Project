@@ -11,6 +11,7 @@ public class GameplayStart : MonoBehaviour
     [SerializeField] private RNG rng;
     [SerializeField] private GameDeck gameDeck;
     [SerializeField] private HandArea handArea;
+    [SerializeField] private Tools tools;
     void Awake()
     {
         combatArea.SetupInstance();
@@ -20,6 +21,7 @@ public class GameplayStart : MonoBehaviour
         rng.SetupInstance();
         gameDeck.SetupInstance();
         handArea.SetupInstance();
+        tools.SetupInstance();
 
         gameDeck.CreateStandardDeck();
         bool loadingGame = false;

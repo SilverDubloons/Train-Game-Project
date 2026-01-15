@@ -6,12 +6,14 @@ public class CombatManager : MonoBehaviour
     private List<EnemyInGame> enemiesInGame = new List<EnemyInGame>();
     public List<EnemyInGame> currentEnemiesInGame = new List<EnemyInGame>();
     public static CombatManager instance;
+    public bool inCombat = false;
     public void SetupInstance()
     {
         instance = this;
     }
     public void SetupCombat(Encounter encounter)
     {
+        inCombat = true;
         currentEnemiesInGame.Clear();
         CombatArea.instance.SetupBoard(encounter.boardSize);
         for (int i = 0; i < encounter.enemies.Length; i++)
@@ -35,5 +37,13 @@ public class CombatManager : MonoBehaviour
             enemiesInGame[i].gameObject.SetActive(false);
         }
         HandArea.instance.StartDrawCards(true);
+        CombatArea.instance.SetPlayerPosition(new Vector2Int(RNG.instance.combat.Range(0, encounter.boardSize.x), 0));
+    }
+    public void HighlightEnemyAttacks()
+    {
+        for (int i = 0; i < enemiesInGame.Count; i++)
+        {
+
+        }
     }
 }

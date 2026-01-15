@@ -42,9 +42,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  combatSpaceSize: {x: 32, y: 32}
+  combatSpaceSize: {x: 64, y: 64}
   distanceBetweenCombatSpaces: {x: 4, y: 6}
-  maxEnemySize: {x: 28, y: 28}
+  maxEnemySize: {x: 60, y: 60}
+  toolInGameSize: {x: 74, y: 84}
+  spaceBetweenToolsInGame: {x: 4, y: 4}
   suitOrder: 0000000001000000020000000300000004000000
   suitColors:
   - {r: 0, g: 0, b: 0, a: 1}
@@ -62,8 +64,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: dbe2530d2cb78e0479f4bde16a1c25a9, type: 3}
   - {fileID: 21300000, guid: 229d5f9c0e691314a8d913ad5e5d3637, type: 3}
   - {fileID: 21300000, guid: 0136193ac4650614b9cd54e987e7776c, type: 3}
-  - {fileID: 21300000, guid: 6e7755f145d8e4c4384e28985715650a, type: 3}
   - {fileID: 21300000, guid: a7d229fdf8fd5c141bfdb4aadd7ea2db, type: 3}
+  - {fileID: 21300000, guid: 6e7755f145d8e4c4384e28985715650a, type: 3}
   - {fileID: 21300000, guid: a977643bc7c5f3d4194a7a102227f3b3, type: 3}
   - {fileID: 21300000, guid: 459f17d77f8461e48a47cbc0386f2f85, type: 3}
   - {fileID: 21300000, guid: 5478d585dc5907d469a5ca7ce86ec385, type: 3}
@@ -150,3 +152,4 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 95183a17a51bf00468bfc917e729359a, type: 3}
   - {fileID: 21300000, guid: c51a125f0d29bad4ba83d66f58d52a48, type: 3}
   - {fileID: 21300000, guid: 66b673c8d004c764793227076a5d1b62, type: 3}
+  selectedCardOffset: {x: 0, y: -15}

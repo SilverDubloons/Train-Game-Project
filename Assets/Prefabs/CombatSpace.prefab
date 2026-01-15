@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7578762355681600680}
   m_Layer: 5
-  m_Name: EnemyParent
+  m_Name: CharacterParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,7 +70,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 32, y: 32}
+  m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6174883191908238488
 MonoBehaviour:
@@ -87,7 +87,7 @@ MonoBehaviour:
   buttonPlus: {fileID: 5802414225084168225}
   visibilityObject: {fileID: 1773511966048774897}
   rt: {fileID: 6935228634478867148}
-  enemyParent: {fileID: 7578762355681600680}
+  characterParent: {fileID: 7578762355681600680}
   gridPosition: {x: 0, y: 0}
   occupyingEnemy: {fileID: 0}
 --- !u!1 &1773511966048774897

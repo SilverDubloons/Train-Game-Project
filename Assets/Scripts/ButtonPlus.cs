@@ -312,10 +312,6 @@ public class ButtonPlus : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 	
 	public void ExectuteButtonPress()
 	{
-		if(clickSound != null && soundSource != null)
-		{
-			soundSource.PlayOneShot(clickSound, volumeFactor);
-		}
 		if(moveImageWhenClicked)
 		{
 			/*if(movingImage)
@@ -330,7 +326,11 @@ public class ButtonPlus : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 		{
 			return;
 		}
-		if(onDoubleClickEvent.GetPersistentEventCount() > 0)
+        if (clickSound != null && soundSource != null)
+        {
+            soundSource.PlayOneShot(clickSound, volumeFactor);
+        }
+        if (onDoubleClickEvent.GetPersistentEventCount() > 0)
 		{
 			if(Time.time - timeOfLastClick > 0.4f)
 			{

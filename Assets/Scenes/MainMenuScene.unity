@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 125642242}
   - component: {fileID: 125642243}
   m_Layer: 5
-  m_Name: ServiceLocator
+  m_Name: References
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -171,6 +171,10 @@ MonoBehaviour:
   themeManager: {fileID: 11400000, guid: 53caabd637f2f4f4e807f83a48def1b2, type: 2}
   enemies:
   - {fileID: 11400000, guid: 5eb308fbdb1b4724d9bdf5dc6b7a86ba, type: 2}
+  tools:
+  - {fileID: 11400000, guid: 9d2f8e63ac3f567489b8a3898ee13d17, type: 2}
+  - {fileID: 11400000, guid: 9d23be749d3fedd4b89846d2c6c3ddee, type: 2}
+  - {fileID: 11400000, guid: 2bd32463f9b485240b60f249a4cc66d9, type: 2}
   limbInGamePrefab: {fileID: 5592692271391516140, guid: 5c3cbc7e2aab06042969773729e3696c, type: 3}
   enemyInGamePrefab: {fileID: 3104707074184538744, guid: 03ffc6c593d2d5b4fba8a7ce6966bbdc, type: 3}
   cardPrefab: {fileID: 3556725916596399084, guid: 2479637815a2aed4c8d0bfeeb1c82566, type: 3}
@@ -1469,8 +1473,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Preferences
   soundOn: 1
   musicOn: 1
-  soundVolume: 0.5
-  musicVolume: 0.25
+  soundVolume: 0.1
+  musicVolume: 0.1
   muteOnFocusLost: 1
   maxTimeBetweenDoubleClicks: 0
   currentTheme: 0

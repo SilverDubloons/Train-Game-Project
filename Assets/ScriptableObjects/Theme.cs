@@ -12,4 +12,5 @@ public class Theme : ScriptableObject
     public Color buttonMouseOver;
     public Color combatSpace;
     public Color enemyMouseOver;
+    public Color shadow;
 }

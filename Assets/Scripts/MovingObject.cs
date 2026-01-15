@@ -20,6 +20,7 @@ public class MovingObject : MonoBehaviour
 	private Dictionary<string, Location> locationsDictionary = new Dictionary<string, Location>();
 	private IEnumerator MoveCoroutine;
 	private bool moving;
+	private string currentDestination;
 	
 	public void SetupLocationsDictionary()
 	{
@@ -31,12 +32,17 @@ public class MovingObject : MonoBehaviour
 	
 	public void StartMove(string destinationName, float delay = 0f, float speedFactor = 1f)
 	{
+		if (currentDestination == destinationName)
+		{
+			return;
+		}
 		if(moving)
 		{
 			StopCoroutine(MoveCoroutine);
 		}
 		MoveCoroutine = MoveObject(locationsDictionary[destinationName], delay, speedFactor);
-		StartCoroutine(MoveCoroutine);
+		currentDestination = destinationName;
+        StartCoroutine(MoveCoroutine);
 	}
 	
 	public void TeleportTo(string destinationName)

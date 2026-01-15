@@ -21,3 +21,4 @@ MonoBehaviour:
   buttonMouseOver: {r: 0.654088, g: 0.654088, b: 0.654088, a: 1}
   combatSpace: {r: 1, g: 0.9595495, b: 0.6156863, a: 1}
   enemyMouseOver: {r: 0, g: 1, b: 0, a: 1}
+  shadow: {r: 0, g: 0, b: 0, a: 0.7058824}

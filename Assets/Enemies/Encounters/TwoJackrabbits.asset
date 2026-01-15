@@ -15,4 +15,4 @@ MonoBehaviour:
   enemies:
   - {fileID: 11400000, guid: 5eb308fbdb1b4724d9bdf5dc6b7a86ba, type: 2}
   - {fileID: 11400000, guid: 5eb308fbdb1b4724d9bdf5dc6b7a86ba, type: 2}
-  boardSize: {x: 4, y: 4}
+  boardSize: {x: 4, y: 3}

@@ -1,8 +1,10 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Card : MonoBehaviour
+public class Card : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private RectTransform rt;
     [SerializeField] private GameObject selectionGlow;
@@ -137,5 +139,24 @@ public class Card : MonoBehaviour
         canMove = interactable;
         scaleOnMouseOver.SetInteractability(interactable);
         tickOnMouseOver.SetInteractability(interactable);
+    }
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (canMove)
+        {
+            HandArea.instance.CardClickedOn(this);
+        }
+    }
+    public void CardSelected()
+    {
+        SoundManager.instance.PlayCardPickupSound();
+        selectionGlow.gameObject.SetActive(true);
+        rt.anchoredPosition = rt.anchoredPosition + r.i.interf.selectedCardOffset;
+    }
+    public void CardDeselected()
+    {
+        SoundManager.instance.PlayCardDropSound();
+        selectionGlow.gameObject.SetActive(false);
+        rt.anchoredPosition = rt.anchoredPosition - r.i.interf.selectedCardOffset;
     }
 }

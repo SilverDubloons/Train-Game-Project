@@ -1,5 +1,5 @@
 using UnityEngine;
-public enum UIElementType { backdrop, standardButtonActive, backButtonActive, warningButtonActive, buttonSpecialState, buttonDisabled, buttonMouseOver, combatSpace, enemyMouseOver }
+public enum UIElementType { backdrop, standardButtonActive, backButtonActive, warningButtonActive, buttonSpecialState, buttonDisabled, buttonMouseOver, combatSpace, enemyMouseOver, shadow }
 [CreateAssetMenu(menuName = "UI/ThemeManager")]
 public class ThemeManager : ScriptableObject
 {
@@ -20,6 +20,7 @@ public class ThemeManager : ScriptableObject
             UIElementType.buttonMouseOver => theme.buttonMouseOver,
             UIElementType.combatSpace => theme.combatSpace,
             UIElementType.enemyMouseOver => theme.enemyMouseOver,
+            UIElementType.shadow => theme.shadow,
             _ => Color.white
         };
     }

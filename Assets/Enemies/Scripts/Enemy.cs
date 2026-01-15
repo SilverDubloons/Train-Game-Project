@@ -12,8 +12,8 @@ public class Enemy : ScriptableObject
     public Vector2 totalSize;
     [SerializeField] public SpawningPattern spawningPattern;
 
-    public CombatSpace GetSpawnSpace(List<CombatSpace> availableSpaces, Vector2Int boardSize)
+    public CombatSpace GetSpawnSpace(CombatSpace[,] availableSpaces)
     {
-        return spawningPattern.GetSpawnSpace(availableSpaces, boardSize);
+        return spawningPattern.GetSpawnSpace(availableSpaces);
     }
 }

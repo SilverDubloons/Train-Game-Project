@@ -5,13 +5,16 @@ public class r : MonoBehaviour
 {
     public static r i;
 
-    [SerializeField] public Interface interf;
-    [SerializeField] public ThemeManager themeManager;
-    [SerializeField] public Enemy[] enemies;
+    public Interface interf;
+    public ThemeManager themeManager;
+    public Enemy[] enemies;
+    public Tool[] tools;
+
     public GameObject limbInGamePrefab;
     public GameObject enemyInGamePrefab;
     public GameObject cardPrefab;
     public Dictionary<string, Enemy> enemyDictionary = new Dictionary<string, Enemy>();
+    public Dictionary<string, Tool> toolDictionary = new Dictionary<string, Tool>();
 
     public void SetupInstance()
     {
@@ -23,6 +26,10 @@ public class r : MonoBehaviour
         foreach (Enemy enemy in enemies)
         {
             enemyDictionary[enemy.enemyTag] = enemy;
+        }
+        foreach (Tool tool in tools)
+        {
+            toolDictionary[tool.toolTag] = tool;
         }
         i = this;
         DontDestroyOnLoad(transform.parent);

@@ -9,6 +9,14 @@ public class GameManager : MonoBehaviour
     }
     public int GetMaxHandSize()
     {
-        return 4;
+        return 15;
+    }
+    public int GetMaxGapInStraights()
+    {
+        return 0;
+    }
+    public bool GetCanStraightsWrap()
+    {
+        return false;
     }
 }

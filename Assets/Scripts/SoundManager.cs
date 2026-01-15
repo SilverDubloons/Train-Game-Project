@@ -107,4 +107,8 @@ public class SoundManager : MonoBehaviour
     {
         PlaySound(cardPickupSounds, 0.5f, "cardPickup", randomize: true);
     }
+    public void PlayCardDropSound()
+    {
+        PlaySound(cardDropSounds, 0.5f, "cardDrop", randomize: true);
+    }
 }

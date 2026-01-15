@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEditor.XR;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class HandArea : MonoBehaviour
     private IEnumerator drawCardsCoroutine;
     private int siblingIndexOfLooseCard = -1;
     public static HandArea instance;
+    private List<Card> selectedCards = new List<Card>();
     public void SetupInstance()
     {
         instance = this;
@@ -190,5 +192,31 @@ public class HandArea : MonoBehaviour
             }
         }
         return cardsInHand;
+    }
+    public bool CanSelectCards()
+    { // this will return false if transitioning or using an ability, etc
+        return true;
+    }
+    public void CardClickedOn(Card card)
+    {
+        if (!CanSelectCards())
+        {
+            return;
+        }
+        if (selectedCards.Contains(card))
+        {            
+            card.CardDeselected();
+            selectedCards.Remove(card);
+        }
+        else
+        {
+            card.CardSelected();
+            selectedCards.Add(card);
+        }
+        SelectedCardsUpdated();
+    }
+    private void SelectedCardsUpdated()
+    {
+        Tools.instance.DeterminePlayableTools(selectedCards);
     }
 }

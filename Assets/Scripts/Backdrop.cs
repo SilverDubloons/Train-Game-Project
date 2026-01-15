@@ -47,12 +47,18 @@ public class Backdrop : MonoBehaviour
             case BackdropShape.corner4:
             default:
                 backdrop.sprite = style.backdrop4;
-                shadow.sprite = style.shadow4;
+                if (shadow != null)
+                {
+                    shadow.sprite = style.shadow4;
+                }
                 rtShadow.sizeDelta = new Vector2(rtShadow.sizeDelta.x, 6f);
                 break;
             case BackdropShape.corner8:
                 backdrop.sprite = style.backdrop8;
-                shadow.sprite = style.shadow8;
+                if (shadow != null)
+                {
+                    shadow.sprite = style.shadow8;
+                }
                 rtShadow.sizeDelta = new Vector2(rtShadow.sizeDelta.x, 10f);
                 break;
         }
@@ -71,7 +77,7 @@ public class Backdrop : MonoBehaviour
     }
     public bool IsMouseOver()
     {
-        if(backdrop == null || shadow == null || EventSystem.current == null || Mouse.current == null)
+        if(EventSystem.current == null || Mouse.current == null)
         {
             return false;
         }
@@ -81,7 +87,7 @@ public class Backdrop : MonoBehaviour
         EventSystem.current.RaycastAll(pointerEventData, results);
         foreach (RaycastResult result in results)
         {
-            if (result.gameObject == backdrop.gameObject || result.gameObject == shadow.gameObject)
+            if ((backdrop!= null && result.gameObject == backdrop.gameObject) || (shadow != null && result.gameObject == shadow.gameObject))
             {
                 return true;
             }
@@ -205,5 +211,9 @@ public class Backdrop : MonoBehaviour
         {
             visibilityObject.SetActive(visible);
         }
+    }
+    public void SetSize(Vector2 newSize)
+    { 
+        rt.sizeDelta = newSize;
     }
 }

@@ -6,7 +6,7 @@ public class CombatSpace : MonoBehaviour
     [SerializeField] private ButtonPlus buttonPlus;
     [SerializeField] private GameObject visibilityObject;
     [SerializeField] private RectTransform rt;
-    [SerializeField] private RectTransform enemyParent;
+    [SerializeField] private RectTransform characterParent;
     public Vector2Int gridPosition;
     public EnemyInGame occupyingEnemy;
     public void SetVisibility(bool visible)
@@ -37,7 +37,18 @@ public class CombatSpace : MonoBehaviour
             Logger.instance.Error("CombatSpace.PlaceEnemyInSpace: enemy is null");
             return;
         }
-        enemy.SetParent(enemyParent, this);
-        // enemy.SetPosition(rt.anchoredPosition);
+        enemy.SetParent(characterParent, this);
+    }
+    public void PlacePlayerInSpace(Player player)
+    {
+        player.SetParent(characterParent, this);
+    }
+    public void SetTargetable(bool targetable)
+    { 
+    
+    }
+    public bool IsTargetable()
+    {
+        return occupyingEnemy != null;
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 // Unity 6000.3.2f1 LTS
 [CreateAssetMenu(menuName = "UI/Interface")]
@@ -16,12 +17,15 @@ public class Interface : ScriptableObject
     public Vector2 combatSpaceSize;
     public Vector2 distanceBetweenCombatSpaces;
     public Vector2 maxEnemySize;
+    public Vector2 toolInGameSize;
+    public Vector2 spaceBetweenToolsInGame;
     public Suit[] suitOrder = new Suit[5] { Suit.Spade, Suit.Club, Suit.Heart, Suit.Diamond, Suit.Rainbow };
     public Color[] suitColors;
     public Dictionary<Suit, int> SuitOrderDictionary = new Dictionary<Suit, int>();
     public Sprite[] rankSprites;
     public Sprite[] suitSprites; // Spade, Club, Heart, Diamond, Rainbow
     public Sprite[] detailSprites;
+    public Vector2 selectedCardOffset;
     public void InitialSetup()
     {
         SetupSuitOrderDictionary();
@@ -129,5 +133,54 @@ public class Interface : ScriptableObject
             default:
                 return -1;
         }
-    }   
+    }
+    public string ConvertIntegerToString(int val, bool capitalized = false)
+    {
+        string intString = "intError";
+        switch (val)
+        {
+            case 0:
+                intString = "zero";
+            break;
+            case 1:
+                intString = "one";
+            break;
+            case 2:
+                intString = "two";
+            break;
+            case 3:
+                intString = "three";
+            break;
+            case 4:
+                intString = "four";
+                break;
+            case 5:
+                intString = "five";
+            break;
+            case 6:
+                intString = "six";
+            break;
+            case 7:
+                intString = "seven";
+            break;
+            case 8:
+                intString = "eight";
+            break;
+            case 9:
+                intString = "nine";
+            break;
+            case 10:
+                intString = "ten";
+            break;
+        }
+        if (capitalized)
+        {
+            string capitalizedIntString = char.ToUpper(intString[0]) + intString[1..];
+            return capitalizedIntString;
+        }
+        else
+        {
+            return intString;
+        }
+    }
 }
