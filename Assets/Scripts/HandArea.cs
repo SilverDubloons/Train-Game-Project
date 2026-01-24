@@ -55,6 +55,9 @@ public class HandArea : MonoBehaviour
             Card topDeckCard = GameDeck.instance.DrawTopCardOfDeck();
             topDeckCard.SetParent(handCardsParent);
             topDeckCard.SetLocation(drawPileLocation);
+            topDeckCard.GetRectTransform().SetSiblingIndex(0);
+            topDeckCard.SetFaceUp(false);
+            topDeckCard.StartFlip();
             ReorganizeHand();
             yield return new WaitForSeconds(timeBetweenDraws / Preferences.instance.gameSpeed);
         }
@@ -218,5 +221,18 @@ public class HandArea : MonoBehaviour
     private void SelectedCardsUpdated()
     {
         Tools.instance.DeterminePlayableTools(selectedCards);
+        List<CombatSpace> movableSpaces = GameManager.instance.GetSpacesPlayerCanMoveToByHand(selectedCards);
+        CombatArea.instance.SetMovableSpaces(movableSpaces);
+    }
+    public void HandPlayed()
+    { 
+        for(int i = 0; i < selectedCards.Count; i++)
+        {
+            selectedCards[i].CardPlayed();
+        }
+        SoundManager.instance.PlayCardSlideSound();
+        selectedCards.Clear();
+        ReorganizeHand();
+        SelectedCardsUpdated();
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
@@ -26,6 +27,7 @@ public class Interface : ScriptableObject
     public Sprite[] suitSprites; // Spade, Club, Heart, Diamond, Rainbow
     public Sprite[] detailSprites;
     public Vector2 selectedCardOffset;
+    public float maxTooltipWidth;
     public void InitialSetup()
     {
         SetupSuitOrderDictionary();
@@ -141,37 +143,37 @@ public class Interface : ScriptableObject
         {
             case 0:
                 intString = "zero";
-            break;
+                break;
             case 1:
                 intString = "one";
-            break;
+                break;
             case 2:
                 intString = "two";
-            break;
+                break;
             case 3:
                 intString = "three";
-            break;
+                break;
             case 4:
                 intString = "four";
                 break;
             case 5:
                 intString = "five";
-            break;
+                break;
             case 6:
                 intString = "six";
-            break;
+                break;
             case 7:
                 intString = "seven";
-            break;
+                break;
             case 8:
                 intString = "eight";
-            break;
+                break;
             case 9:
                 intString = "nine";
-            break;
+                break;
             case 10:
                 intString = "ten";
-            break;
+                break;
         }
         if (capitalized)
         {
@@ -182,5 +184,42 @@ public class Interface : ScriptableObject
         {
             return intString;
         }
+    }
+    public Vector2 GetCanvasPositionOfRectTransform(RectTransform rectTransform, Canvas canvas)
+    {
+        Vector3[] worldCorners = new Vector3[4];
+        rectTransform.GetWorldCorners(worldCorners);
+        Vector3 worldCenter = (worldCorners[0] + worldCorners[2]) * 0.5f;
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, worldCenter);
+        RectTransform canvasRect = canvas.GetComponent<RectTransform>();
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPoint, canvas.worldCamera, out localPoint);
+        return localPoint;
+    }
+    public string GetFixedLengthIntString(int val, int length)
+    {
+        string intString = val.ToString();
+        while (intString.Length < length)
+        {
+            intString = "0" + intString;
+        }
+        return intString;
+    }
+    public bool IsPointInRectTransform(Vector2 point, RectTransform rectTransform, Canvas canvas)
+    {
+        Vector3[] worldCorners = new Vector3[4];
+        rectTransform.GetWorldCorners(worldCorners);
+        RectTransform canvasRect = canvas.GetComponent<RectTransform>();
+        Vector2 bottomLeftScreenPoint = RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, worldCorners[0]);
+        Vector2 bottomLeft = RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, bottomLeftScreenPoint, canvas.worldCamera, out bottomLeft) ? bottomLeft : Vector2.zero;
+        Vector2 topRightScreenPoint = RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, worldCorners[2]);
+        Vector2 topRight = RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, topRightScreenPoint, canvas.worldCamera, out topRight) ? topRight : Vector2.zero;
+        if (point.x >= bottomLeft.x && point.x <= topRight.x && point.y >= bottomLeft.y && point.y <= topRight.y)
+        {
+            // Logger.instance.Log($"Interface.IsPointInRectTransform: {rectTransform.name}, point: {point}, bottomLeft: {bottomLeft}, topRight: {topRight} TRUE");
+            return true;
+        }
+        // Logger.instance.Log($"Interface.IsPointInRectTransform: {rectTransform.name}, point: {point}, bottomLeft: {bottomLeft}, topRight: {topRight} FALSE");
+        return false;
     }
 }

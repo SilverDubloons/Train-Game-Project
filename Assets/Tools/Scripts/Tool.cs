@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Linq;
 
 [CreateAssetMenu(fileName = "Tool", menuName = "Scriptable Objects/Tool")]
 public class Tool : ScriptableObject
@@ -14,7 +15,7 @@ public class Tool : ScriptableObject
     public int adjacentColumnsTarget = 0; // 1 means player can target column plus one column on each side etc
     public int areaOfEffectRadius = 0; // 1 means target plus adjacent tiles in all 4 cardinal directions
     public int damage;
-    public ToolSpecialTags[] toolSpecialTags;
+    public ToolSpecialTag[] toolSpecialTags;
     public string GetHandStyleString()
     {
         switch (handStyle)
@@ -59,6 +60,10 @@ public class Tool : ScriptableObject
                 return "GetHandStyleString ERROR";
         }
     }
+    public bool HasSpecialTag(ToolSpecialTag toolSpecialTag)
+    { 
+        return toolSpecialTags.Contains(toolSpecialTag);
+    }
 }
 public enum HandType
 { 
@@ -87,9 +92,10 @@ public enum ToolTargetStyle
     FirstInColumn,
     LastInColumn,
     EntireColumn,
-    AnyInColumn
+    AnyInColumn,
+    Self
 }
-public enum ToolSpecialTags
+public enum ToolSpecialTag
 { 
     AlwaysAim,
     DoubleDamageFrontRow,

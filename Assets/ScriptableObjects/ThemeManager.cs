@@ -1,5 +1,5 @@
 using UnityEngine;
-public enum UIElementType { backdrop, standardButtonActive, backButtonActive, warningButtonActive, buttonSpecialState, buttonDisabled, buttonMouseOver, combatSpace, enemyMouseOver, shadow }
+public enum UIElementType { backdrop, standardButtonActive, backButtonActive, warningButtonActive, buttonSpecialState, buttonDisabled, buttonMouseOver, combatSpace, enemyMouseOver, shadow, tooltipName, tooltipDamage, tooltipSpecial, tooltipTargetStyle, tooltipBorder, tooltipBody, common, uncommon, rare, legendary }
 [CreateAssetMenu(menuName = "UI/ThemeManager")]
 public class ThemeManager : ScriptableObject
 {
@@ -21,6 +21,16 @@ public class ThemeManager : ScriptableObject
             UIElementType.combatSpace => theme.combatSpace,
             UIElementType.enemyMouseOver => theme.enemyMouseOver,
             UIElementType.shadow => theme.shadow,
+            UIElementType.tooltipName => theme.tooltipName,
+            UIElementType.tooltipDamage => theme.tooltipDamage,
+            UIElementType.tooltipSpecial => theme.tooltipSpecial,
+            UIElementType.tooltipTargetStyle => theme.tooltipTargetStyle,
+            UIElementType.tooltipBorder => theme.tooltipBorder,
+            UIElementType.tooltipBody => theme.tooltipBody,
+            UIElementType.common => theme.common,
+            UIElementType.uncommon => theme.uncommon,
+            UIElementType.rare => theme.rare,
+            UIElementType.legendary => theme.legendary,
             _ => Color.white
         };
     }

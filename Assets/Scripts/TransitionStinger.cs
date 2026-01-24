@@ -45,8 +45,8 @@ public class TransitionStinger : MonoBehaviour
 			yield return null;
 		}
 		Preferences.instance.CloseMenu();
-		// LocalInterface.instance.SceneChanged(sceneToLoad, false);
-		switchingScenes = false;
+		SceneChanged();
+        switchingScenes = false;
 		t = 0;
 		while(t < transitionTime)
 		{
@@ -57,4 +57,23 @@ public class TransitionStinger : MonoBehaviour
 		stingerRT.gameObject.SetActive(true);
         visibilityObject.SetActive(false);
 	}
+    public string GetCurrentSceneName()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        string sceneName = currentScene.name;
+        return sceneName;   // GameplayScene || MainMenuScene
+    }
+	public void SceneChanged()
+	{ 
+		string sceneName = GetCurrentSceneName();
+		switch (sceneName)
+		{ 
+			case "GameplayScene":
+				
+			break;
+            case "MainMenuScene":
+
+            break;
+        }
+    }
 }

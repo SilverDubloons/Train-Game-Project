@@ -24,6 +24,9 @@ public class Card : MonoBehaviour, IPointerClickHandler
     private bool moving = false;
     private bool canMove = false;
     private IEnumerator moveCoroutine;
+    private bool faceUp = false;
+    private IEnumerator flipCoroutine;
+    private bool flipping = false;
     public void UpdateGraphics()
     {
         if (cardData.isSpecialCard)
@@ -123,7 +126,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
         if (discardAtEnd)
         {
-            GameDeck.instance.DiscardCard(this.cardData);
+            GameDeck.instance.AddCardToDiscardPile(this, this.cardData);
         }
         if (addToDrawPileAtEnd)
         {
@@ -131,7 +134,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
         if (destroyAtEnd)
         {
-            Destroy(gameObject);
+            GameDeck.instance.DisableCard(this);
         }
     }
     public void SetInteractability(bool interactable)
@@ -158,5 +161,53 @@ public class Card : MonoBehaviour, IPointerClickHandler
         SoundManager.instance.PlayCardDropSound();
         selectionGlow.gameObject.SetActive(false);
         rt.anchoredPosition = rt.anchoredPosition - r.i.interf.selectedCardOffset;
+    }
+    public void CardPlayed()
+    {
+        SetInteractability(false);
+        selectionGlow.gameObject.SetActive(false);
+        StartFlip();
+        GameDeck.instance.StartDiscardCard(this);
+    }
+    public void SetFaceUp(bool newFaceUp)
+    {
+        faceUp = newFaceUp;
+        front.gameObject.SetActive(faceUp);
+        back.gameObject.SetActive(!faceUp);
+    }
+    public void StartFlip()
+    {
+        if(flipping)
+        {
+            StopCoroutine(flipCoroutine);
+        }
+        flipCoroutine = FlipCoroutine();
+        StartCoroutine(flipCoroutine);
+    }
+    private IEnumerator FlipCoroutine()
+    { 
+        flipping = true;
+        float t = 0f;
+        float flipDuration = 0.1f;
+        Vector3 originalScale = rt.localScale;
+        Vector3 destinationScale = rt.localScale;
+        destinationScale.x = 0;
+        while (t < flipDuration)
+        {
+            t = Mathf.Clamp(t + Time.deltaTime * Preferences.instance.gameSpeed, 0f, flipDuration);
+            float normalizedTime = t / flipDuration;
+            rt.localScale = Vector3.Lerp(originalScale, destinationScale, normalizedTime);
+            yield return null;
+        }
+        t = 0;
+        SetFaceUp(!faceUp);
+        while (t < flipDuration)
+        {
+            t = Mathf.Clamp(t + Time.deltaTime * Preferences.instance.gameSpeed, 0f, flipDuration);
+            float normalizedTime = t / flipDuration;
+            rt.localScale = Vector3.Lerp(destinationScale, originalScale, normalizedTime);
+            yield return null;
+        }
+        flipping = false;
     }
 }

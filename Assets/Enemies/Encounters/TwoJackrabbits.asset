@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31f93195e6359904ca4f62b3c13d1b2e, type: 3}
   m_Name: TwoJackrabbits
   m_EditorClassIdentifier: Assembly-CSharp::Encounter
+  encounterName: Two Jackrabbits
+  encounterTag: TwoJackrabbits
+  encounterDescription: There's two Jackrabbits
   enemies:
   - {fileID: 11400000, guid: 5eb308fbdb1b4724d9bdf5dc6b7a86ba, type: 2}
   - {fileID: 11400000, guid: 5eb308fbdb1b4724d9bdf5dc6b7a86ba, type: 2}

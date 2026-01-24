@@ -8,13 +8,16 @@ public class r : MonoBehaviour
     public Interface interf;
     public ThemeManager themeManager;
     public Enemy[] enemies;
+    public Encounter[] encounters;
     public Tool[] tools;
 
     public GameObject limbInGamePrefab;
     public GameObject enemyInGamePrefab;
     public GameObject cardPrefab;
     public Dictionary<string, Enemy> enemyDictionary = new Dictionary<string, Enemy>();
+    public Dictionary<string, Encounter> encounterDictionary = new Dictionary<string, Encounter>();
     public Dictionary<string, Tool> toolDictionary = new Dictionary<string, Tool>();
+    public Canvas persistantCanvas;
 
     public void SetupInstance()
     {
@@ -26,6 +29,10 @@ public class r : MonoBehaviour
         foreach (Enemy enemy in enemies)
         {
             enemyDictionary[enemy.enemyTag] = enemy;
+        }
+        foreach (Encounter encounter in encounters)
+        {
+            encounterDictionary[encounter.encounterTag] = encounter;
         }
         foreach (Tool tool in tools)
         {

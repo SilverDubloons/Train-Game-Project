@@ -1,3 +1,7 @@
 Images
 
 https://clipart-library.com/clipart/train-silhouette-cliparts_5.htm
+
+Code
+
+https://github.com/olegknyazev/SoftMask

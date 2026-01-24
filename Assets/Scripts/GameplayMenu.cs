@@ -4,7 +4,6 @@ public class GameplayMenu : MonoBehaviour
 {
     [SerializeField] private ButtonPlus startCombatButton;
     [SerializeField] private Backdrop backdrop;
-    [SerializeField] private Encounter[] encounters;
 
     public void SetInteractability(bool interactable)
     {
@@ -19,6 +18,7 @@ public class GameplayMenu : MonoBehaviour
         MovingObjects.instance.mo["GameplayMenu"].StartMove("OffScreen");
         MovingObjects.instance.mo["CombatArea"].StartMove("OnScreen");
         MovingObjects.instance.mo["DrawPile"].StartMove("OnScreen");
-        CombatManager.instance.SetupCombat(encounters[0]);
+        MovingObjects.instance.mo["DiscardPile"].StartMove("OnScreen");
+        CombatManager.instance.SetupCombat(r.i.encounterDictionary["TwoJackrabbits"]);
     }
 }

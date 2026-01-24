@@ -7,6 +7,8 @@ public class Limb
     public Vector2 location;
     public LimbTag[] limbTags;
     public Sprite sprite;
+    public int maxHealth;
+    public int startingHealth;
 }
 
 public enum LimbTag

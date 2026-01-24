@@ -12,6 +12,8 @@ public class GameplayStart : MonoBehaviour
     [SerializeField] private GameDeck gameDeck;
     [SerializeField] private HandArea handArea;
     [SerializeField] private Tools tools;
+    [SerializeField] private TargetingArrows targetingArrows;
+    [SerializeField] private CardBurning cardBurning;
     void Awake()
     {
         combatArea.SetupInstance();
@@ -22,6 +24,8 @@ public class GameplayStart : MonoBehaviour
         gameDeck.SetupInstance();
         handArea.SetupInstance();
         tools.SetupInstance();
+        targetingArrows.SetupInstance();
+        cardBurning.SetupInstance();
 
         gameDeck.CreateStandardDeck();
         bool loadingGame = false;
@@ -37,6 +41,8 @@ public class GameplayStart : MonoBehaviour
         MovingObjects.instance.mo["GameplayMenu"].StartMove("OnScreen");
         MovingObjects.instance.mo["CombatArea"].TeleportTo("OffScreen");
         MovingObjects.instance.mo["DrawPile"].TeleportTo("OffScreen");
+        MovingObjects.instance.mo["DiscardPile"].TeleportTo("OffScreen");
+        r.i.persistantCanvas.worldCamera = GameManager.instance.gameplayCamera;
         StartCoroutine(WaitAndStart());
     }
     private IEnumerator WaitAndStart()

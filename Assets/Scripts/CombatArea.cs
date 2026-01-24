@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Mathematics;
 
 public class CombatArea : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class CombatArea : MonoBehaviour
     // private List<CombatSpace> currentCombatSpaces = new List<CombatSpace>();
     private CombatSpace[,] currentCombatSpaces;
     public static CombatArea instance;
-    private Vector2Int currentBoardSize;
+    public Vector2Int currentBoardSize;
     
 
     public void SetupInstance()
@@ -52,6 +53,7 @@ public class CombatArea : MonoBehaviour
                 newSpace.name = $"Combat Space ({x}, {y})";
                 newSpace.SetPosition(new Vector2((boardSize.x - 1) * (-r.i.interf.combatSpaceSize.x / 2f - r.i.interf.distanceBetweenCombatSpaces.x / 2f) + r.i.interf.combatSpaceSize.x * x + r.i.interf.distanceBetweenCombatSpaces.x * x, (boardSize.y - 1) * (-r.i.interf.combatSpaceSize.y / 2f - r.i.interf.distanceBetweenCombatSpaces.y / 2f) + r.i.interf.combatSpaceSize.y * y + r.i.interf.distanceBetweenCombatSpaces.y * y));
                 newSpace.gridPosition = new Vector2Int(x, y);
+                newSpace.SetInteractability(false);
                 /*if (!currentCombatSpaces.Contains(newSpace))
                 {
                     currentCombatSpaces.Add(newSpace);
@@ -72,77 +74,112 @@ public class CombatArea : MonoBehaviour
     { 
         return enemy.GetSpawnSpace(currentCombatSpaces);
     }
-    public void SetPlayerPosition(Vector2Int spawnPosition)
+    public void SetPlayerPosition(Vector2Int newPosition)
     {
-        player.SetPlayerPosition(currentCombatSpaces[spawnPosition.x, spawnPosition.y]);
+        player.SetPlayerPosition(currentCombatSpaces[newPosition.x, newPosition.y]);
     }
-    public int PreviewSelectableTargets(ToolTargetStyle targetStyle, int adjacentColumnsTarget)
+    public void SetPlayerPosition(CombatSpace combatSpace)
     {
-        int targetableSpaces = 0;
-        switch (targetStyle)
+        player.SetPlayerPosition(combatSpace);
+    }
+    public int PreviewSelectableTargets(ToolTargetStyle targetStyle, int adjacentColumnsTarget, bool aiming)
+    {
+        Logger.instance.Log($"Previewing selectable targets with style {targetStyle}, adjacent columns {adjacentColumnsTarget}, aiming {aiming}");
+        CombatSpace playerSpace = player.GetCurrentSpace();
+        if (!CombatManager.instance.inCombat)
         {
-            case ToolTargetStyle.EntireColumn:
-                for (int x = Mathf.Max(0, player.currentSpace.gridPosition.x - adjacentColumnsTarget); x < Mathf.Min(currentCombatSpaces.GetLength(0), player.currentSpace.gridPosition.x + adjacentColumnsTarget); x++)
-                {
+            return -1;
+        }
+        int targetableSpaces = 0;
+        int leftMostColumn = Mathf.Max(0, playerSpace.gridPosition.x - adjacentColumnsTarget);
+        int rightMostColumn = Mathf.Min(currentCombatSpaces.GetLength(0), playerSpace.gridPosition.x + adjacentColumnsTarget);
+        for (int x = leftMostColumn; x <= rightMostColumn; x++)
+        {
+            switch (targetStyle)
+            {
+                case ToolTargetStyle.EntireColumn:
                     for (int y = 1; y < currentCombatSpaces.GetLength(1); y++)
                     {
-                        currentCombatSpaces[x, y].SetTargetable(true);
+                        currentCombatSpaces[x, y].SetTargetable(true, aiming);
                         targetableSpaces++;
                     }
-                }
                 break;
-            case ToolTargetStyle.LastInColumn:
-                for (int x = Mathf.Max(0, player.currentSpace.gridPosition.x - adjacentColumnsTarget); x < Mathf.Min(currentCombatSpaces.GetLength(0), player.currentSpace.gridPosition.x + adjacentColumnsTarget); x++)
-                {
+                case ToolTargetStyle.LastInColumn:
                     for (int y = currentCombatSpaces.GetLength(1) - 1; y >= 1; y--)
                     {
                         if (currentCombatSpaces[x, y].IsTargetable())
                         {
-                            currentCombatSpaces[x, y].SetTargetable(true);
+                            currentCombatSpaces[x, y].SetTargetable(true, aiming);
                             targetableSpaces++;
                             break;
                         }
                     }
-                }
                 break;
-            case ToolTargetStyle.FirstInColumn:
-                for (int x = Mathf.Max(0, player.currentSpace.gridPosition.x - adjacentColumnsTarget); x < Mathf.Min(currentCombatSpaces.GetLength(0), player.currentSpace.gridPosition.x + adjacentColumnsTarget); x++)
-                {
+                case ToolTargetStyle.FirstInColumn:
                     for (int y = 1; y < currentCombatSpaces.GetLength(1); y++)
                     {
                         if (currentCombatSpaces[x, y].IsTargetable())
                         {
-                            currentCombatSpaces[x, y].SetTargetable(true);
+                            currentCombatSpaces[x, y].SetTargetable(true, aiming);
                             targetableSpaces++;
                             break;
                         }
                     }
-                }
                 break;
-            case ToolTargetStyle.AnyInColumn:
-                for (int x = Mathf.Max(0, player.currentSpace.gridPosition.x - adjacentColumnsTarget); x < Mathf.Min(currentCombatSpaces.GetLength(0), player.currentSpace.gridPosition.x + adjacentColumnsTarget); x++)
-                {
+                case ToolTargetStyle.AnyInColumn:
                     for (int y = 1; y < currentCombatSpaces.GetLength(1); y++)
                     {
                         if (currentCombatSpaces[x, y].IsTargetable())
                         {
-                            currentCombatSpaces[x, y].SetTargetable(true);
+                            currentCombatSpaces[x, y].SetTargetable(true, aiming);
                             targetableSpaces++;
                         }
                     }
-                }
                 break;
+            }
         }
         return targetableSpaces;
     }
     public void EndTargetPreview()
     {
+        Logger.instance.Log("Ending target preview");
         for (int x = 0; x < currentCombatSpaces.GetLength(0); x++)
         {
             for (int y = 1; y < currentCombatSpaces.GetLength(1); y++)
             {
-                currentCombatSpaces[x, y].SetTargetable(false);
+                currentCombatSpaces[x, y].SetTargetable(false, false);
             }
+        }
+    }
+    public CombatSpace GetCombatSpaceAtPosition(Vector2Int position)
+    {
+        if(position.x < 0 || position.x >= currentCombatSpaces.GetLength(0) || position.y < 0 || position.y >= currentCombatSpaces.GetLength(1))
+        {
+            return null;
+        }
+        return currentCombatSpaces[position.x, position.y];
+    }
+    public bool IsPositionInCombatArea(Vector2Int position)
+    {
+        return position.x >= 0 && position.x < currentCombatSpaces.GetLength(0) && position.y >= 0 && position.y < currentCombatSpaces.GetLength(1);
+    }
+    public CombatSpace GetPlayerSpace()
+    {
+        return player.GetCurrentSpace();
+    }
+    public void SetMovableSpaces(List<CombatSpace> movableSpaces)
+    {
+        if (movableSpaces == null)
+        {
+            for (int i = 0; i < currentCombatSpaces.GetLength(0); i++)
+            {
+                currentCombatSpaces[i, 0].SetInteractability(false);
+            }
+            return;
+        }
+        for (int i = 0; i < currentCombatSpaces.GetLength(0); i++)
+        {
+            currentCombatSpaces[i, 0].SetInteractability(movableSpaces.Contains(currentCombatSpaces[i, 0]));
         }
     }
 }

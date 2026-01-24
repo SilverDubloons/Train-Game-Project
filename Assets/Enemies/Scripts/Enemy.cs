@@ -11,7 +11,7 @@ public class Enemy : ScriptableObject
     public Vector2 spriteCenter;
     public Vector2 totalSize;
     [SerializeField] public SpawningPattern spawningPattern;
-
+    public Color crosshairColor = Color.white;
     public CombatSpace GetSpawnSpace(CombatSpace[,] availableSpaces)
     {
         return spawningPattern.GetSpawnSpace(availableSpaces);

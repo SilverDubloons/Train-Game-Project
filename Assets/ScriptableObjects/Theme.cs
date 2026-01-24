@@ -13,4 +13,14 @@ public class Theme : ScriptableObject
     public Color combatSpace;
     public Color enemyMouseOver;
     public Color shadow;
+    public Color tooltipName; // do we need the name? since it's always on the tool itself? Might need it for other things like baubles, status effects
+    public Color tooltipDamage;
+    public Color tooltipSpecial;
+    public Color tooltipTargetStyle;
+    public Color tooltipBorder;
+    public Color tooltipBody;
+    public Color common;
+    public Color uncommon;
+    public Color rare;
+    public Color legendary;
 }

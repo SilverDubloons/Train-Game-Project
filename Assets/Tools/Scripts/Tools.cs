@@ -141,4 +141,23 @@ public class Tools : MonoBehaviour
         playableToolsBackdrop.SetSize(new Vector2(playableTools.Count * (r.i.interf.toolInGameSize.x + r.i.interf.spaceBetweenToolsInGame.x) + r.i.interf.spaceBetweenToolsInGame.x, r.i.interf.toolInGameSize.y + r.i.interf.spaceBetweenToolsInGame.y * 2));
         MovingObjects.instance.mo["PlayableTools"].StartMove("OnScreen");
     }
+    public ToolInGame GetToolInGameMouseIsOver()
+    {
+        Vector2 mousePosition = r.i.interf.GetMousePosition();
+        for (int i = 0; i < playerTools.Count; i++)
+        {
+            if (r.i.interf.IsPointInRectTransform(mousePosition, playerTools[i].rt, GameManager.instance.gameplayCanvas))
+            {
+                return playerTools[i];
+            }
+        }
+        for (int i = 0; i < playerPlayableTools.Count; i++)
+        {
+            if (r.i.interf.IsPointInRectTransform(mousePosition, playerPlayableTools[i].rt, GameManager.instance.gameplayCanvas))
+            {
+                return playerPlayableTools[i];
+            }
+        }
+        return null;
+    }
 }

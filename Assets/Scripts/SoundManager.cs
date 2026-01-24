@@ -111,4 +111,8 @@ public class SoundManager : MonoBehaviour
     {
         PlaySound(cardDropSounds, 0.5f, "cardDrop", randomize: true);
     }
+    public void PlayCardSlideSound()
+    {
+        PlaySound(cardSlideSounds, 0.5f, "cardSlide", randomize: true);
+    }
 }

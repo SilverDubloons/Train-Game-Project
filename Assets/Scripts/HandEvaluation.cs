@@ -824,7 +824,7 @@ public class HandEvaluation
             handStyles.Add(HandType.HighCard);
             highCardCards.Add(hand[hand.Count - 1]);
         }
-        bool[] handsContained = new bool[18];
+        bool[] handsContained = new bool[19];
         handsContained[0] = highCard;
         handsContained[1] = onePair;
         handsContained[2] = twoPair;
@@ -843,6 +843,7 @@ public class HandEvaluation
         handsContained[15] = wideHouse;
         handsContained[16] = hugeHouse;
         handsContained[17] = sevenOfAKind;
+        handsContained[18] = royalFlush;
         return handStyles;
     }
 

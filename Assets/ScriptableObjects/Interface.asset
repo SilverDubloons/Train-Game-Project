@@ -153,3 +153,4 @@ MonoBehaviour:
   - {fileID: 21300000, guid: c51a125f0d29bad4ba83d66f58d52a48, type: 3}
   - {fileID: 21300000, guid: 66b673c8d004c764793227076a5d1b62, type: 3}
   selectedCardOffset: {x: 0, y: -15}
+  maxTooltipWidth: 140

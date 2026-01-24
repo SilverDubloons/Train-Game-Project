@@ -6,6 +6,7 @@ public class MainMenuStart : MonoBehaviour
     [SerializeField] private Preferences preferences;
     [SerializeField] private MovingObjects movingObjects;
     [SerializeField] private TransitionStinger transitionStinger;
+    [SerializeField] private Tooltip tooltip;
     void Awake()
     {
         if (r.i == null) // only setup if not already done, these ones are persistent
@@ -14,6 +15,7 @@ public class MainMenuStart : MonoBehaviour
             references.interf.InitialSetup();
             preferences.SetupInstance();
             transitionStinger.SetupInstance();
+            tooltip.SetupInstance();
         }
         movingObjects.SetupInstance();
         MovingObjects.instance.mo["MainMenu"].TeleportTo("OffScreen");

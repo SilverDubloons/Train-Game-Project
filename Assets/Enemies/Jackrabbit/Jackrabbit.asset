@@ -14,33 +14,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   enemyTag: Jackrabbit
   enemyName: Jackrabbit
-  maxHealth: 6
+  maxHealth: 10
   limbs:
   - limbName: Torso
     size: {x: 70, y: 53.5}
     location: {x: 0, y: 0}
     limbTags: 03000000
     sprite: {fileID: 21300000, guid: e4b74fddc97c6334aa6bd6e73cde65bf, type: 3}
+    maxHealth: 5
+    startingHealth: 5
   - limbName: Tail
     size: {x: 29, y: 15}
     location: {x: -45.5, y: -19.5}
     limbTags: 02000000
     sprite: {fileID: 21300000, guid: be76d9aaecb6f6e4daf5c71aca178e7f, type: 3}
+    maxHealth: 5
+    startingHealth: 5
   - limbName: Hind Leg
     size: {x: 37, y: 48}
     location: {x: -14.5, y: -21}
     limbTags: 01000000
     sprite: {fileID: 21300000, guid: 7275c5c036733dc40a1caa8a8abe884c, type: 3}
+    maxHealth: 5
+    startingHealth: 5
   - limbName: Fore Leg
     size: {x: 37, y: 48}
     location: {x: 25, y: -21.5}
     limbTags: 01000000
     sprite: {fileID: 21300000, guid: 543702468bf705d43bee93fb98a5ca2d, type: 3}
+    maxHealth: 5
+    startingHealth: 5
   - limbName: Head
     size: {x: 68, y: 79}
     location: {x: 34, y: 39.500004}
     limbTags: 02000000
     sprite: {fileID: 21300000, guid: 9311f96e58201e74d9bde6f2a56d9f67, type: 3}
+    maxHealth: 5
+    startingHealth: 5
   spriteCenter: {x: 4, y: 16.75}
   totalSize: {x: 128, y: 124.5}
   spawningPattern: {fileID: 11400000, guid: efd1c754f37a09440892df466bc9d6ca, type: 2}
+  crosshairColor: {r: 1, g: 1, b: 1, a: 1}

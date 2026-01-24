@@ -19,6 +19,7 @@ public class EnemyInGame : MonoBehaviour
     
     public void SetupEnemyInGame(Enemy enemy)
     {
+        name = enemy.enemyName;
         enemyTag = enemy.enemyTag;
         enemyName = enemy.enemyName;
         maxHealth = enemy.maxHealth;
@@ -37,7 +38,7 @@ public class EnemyInGame : MonoBehaviour
                 limbInGames.Add(newLimbInGame);
             }
             currentLimbInGames.Add(newLimbInGame);
-            newLimbInGame.SetupFromLimb(enemy.limbs[i]);
+            newLimbInGame.SetupFromLimb(enemy.limbs[i], enemy, this);
         }
         for(int i = enemy.limbs.Length; i < limbInGames.Count; i++)
         {
@@ -59,5 +60,52 @@ public class EnemyInGame : MonoBehaviour
         rt.localScale = new Vector3(scale, scale, 1f);
         rt.anchoredPosition = new Vector2(-spriteCenter.x * scale, -spriteCenter.y * scale);
         currentCombatSpace = combatSpace;
+    }
+    public void SetVisibilityOfLimbCrosshairs(bool visible)
+    {
+        for (int i = 0; i < limbInGames.Count; i++)
+        {
+            limbInGames[i].SetVisibilityOfCrosshair(visible);
+        }
+    }
+    public void SetHighlightOfAllLimbs(bool highlight)
+    {
+        for (int i = 0; i < currentLimbInGames.Count; i++)
+        {
+            currentLimbInGames[i].SetHighlightLimb(highlight);
+        }
+    }
+    public CombatSpace GetCurrentCombatSpace()
+    {
+        return currentCombatSpace;
+    }
+    public string GetEnemyName()
+    {
+        return enemyName;
+    }
+    public void ApplyToolEffect(ToolInGame toolInGame, bool aiming = false, LimbInGame targetLimb = null)
+    {
+        int damage = toolInGame.GetDamage(currentCombatSpace, this, aiming, targetLimb);
+        if(damage > 0)
+        {
+            if (aiming && targetLimb != null)
+            {
+                TakeLimbDamage(targetLimb, damage);
+            }
+            TakeDamage(damage);
+        }
+    }
+    public void TakeLimbDamage(LimbInGame limb, int damage)
+    {
+        limb.TakeDamage(damage);
+    }
+    public void TakeDamage(int damage)
+    { 
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            CombatManager.instance.EnemyDefeated(this);
+        }
     }
 }

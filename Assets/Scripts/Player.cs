@@ -5,7 +5,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private RectTransform rt;
     [SerializeField] private Image image;
-    public CombatSpace currentSpace;
+    private CombatSpace currentSpace;
     private int maxHealth;
     private int currentHealth;
 
@@ -18,5 +18,9 @@ public class Player : MonoBehaviour
     {
         rt.SetParent(newParent);
         rt.anchoredPosition = Vector2.zero;
+    }
+    public CombatSpace GetCurrentSpace()
+    { 
+        return currentSpace;
     }
 }

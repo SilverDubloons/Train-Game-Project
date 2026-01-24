@@ -64,7 +64,9 @@ public class EnemySpriteBaker : MonoBehaviour
                 size = limbHitboxes[i].rt.sizeDelta,
                 location = limbHitboxes[i].rt.anchoredPosition,
                 limbTags = limbHitboxes[i].limbTags,
-                sprite = limbHitboxes[i].image.sprite
+                sprite = limbHitboxes[i].image.sprite,
+                maxHealth = limbHitboxes[i].maxHealth,
+                startingHealth = limbHitboxes[i].currentHealth
             };
         }
         Vector2 spriteCenter = (topRight + bottomLeft) / 2;

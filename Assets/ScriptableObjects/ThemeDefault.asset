@@ -17,8 +17,18 @@ MonoBehaviour:
   backButtonActive: {r: 0.7987421, g: 0.74206436, b: 0.032652836, a: 1}
   warningButtonActive: {r: 1, g: 0.11635202, b: 0.11635202, a: 1}
   buttonSpecialState: {r: 0, g: 0.72955966, b: 0, a: 1}
-  buttonDisabled: {r: 0.408805, g: 0.408805, b: 0.408805, a: 1}
+  buttonDisabled: {r: 0.28930807, g: 0.28930807, b: 0.28930807, a: 1}
   buttonMouseOver: {r: 0.654088, g: 0.654088, b: 0.654088, a: 1}
   combatSpace: {r: 1, g: 0.9595495, b: 0.6156863, a: 1}
   enemyMouseOver: {r: 0, g: 1, b: 0, a: 1}
   shadow: {r: 0, g: 0, b: 0, a: 0.7058824}
+  tooltipName: {r: 0.22327036, g: 0.42268836, b: 1, a: 1}
+  tooltipDamage: {r: 1, g: 0.21069163, b: 0.21069163, a: 1}
+  tooltipSpecial: {r: 1, g: 0.084905505, b: 0.63278705, a: 1}
+  tooltipTargetStyle: {r: 0.12655042, g: 1, b: 0.084905505, a: 1}
+  tooltipBorder: {r: 0.4433961, g: 0.6319233, b: 1, a: 1}
+  tooltipBody: {r: 0.18393247, g: 0.19546096, b: 0.84313726, a: 1}
+  common: {r: 0.37106913, g: 0.37106913, b: 0.37106913, a: 1}
+  uncommon: {r: 0.17295581, g: 1, b: 0.44735053, a: 1}
+  rare: {r: 0.04922653, g: 0.24113771, b: 0.8238993, a: 1}
+  legendary: {r: 1, g: 0.6350146, b: 0.09748411, a: 1}
