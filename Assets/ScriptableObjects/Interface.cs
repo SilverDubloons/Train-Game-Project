@@ -28,6 +28,7 @@ public class Interface : ScriptableObject
     public Sprite[] detailSprites;
     public Vector2 selectedCardOffset;
     public float maxTooltipWidth;
+    public Sprite[] directionToMoveIcons; // none, then starting north and moving clockwise
     public void InitialSetup()
     {
         SetupSuitOrderDictionary();
@@ -221,5 +222,37 @@ public class Interface : ScriptableObject
         }
         // Logger.instance.Log($"Interface.IsPointInRectTransform: {rectTransform.name}, point: {point}, bottomLeft: {bottomLeft}, topRight: {topRight} FALSE");
         return false;
+    }
+    public string ConvertDirectionToMoveToString(DirectionToMove directionToMove)
+    {
+        return directionToMove switch
+        {
+            DirectionToMove.None => "None",
+            DirectionToMove.Up => "Up",
+            DirectionToMove.UpRight => "Up & Right",
+            DirectionToMove.Right => "Right",
+            DirectionToMove.DownRight => "Down & Right",
+            DirectionToMove.Down => "Down",
+            DirectionToMove.DownLeft => "Down & Left",
+            DirectionToMove.Left => "Left",
+            DirectionToMove.UpLeft => "Up & Left",
+            _ => "ERROR",
+        };
+    }
+    public Sprite ConvertDirectionToMoveToSprite(DirectionToMove directionToMove)
+    {
+        return directionToMove switch
+        {
+            DirectionToMove.None => directionToMoveIcons[0],
+            DirectionToMove.Up => directionToMoveIcons[1],
+            DirectionToMove.UpRight => directionToMoveIcons[2],
+            DirectionToMove.Right => directionToMoveIcons[3],
+            DirectionToMove.DownRight => directionToMoveIcons[4],
+            DirectionToMove.Down => directionToMoveIcons[5],
+            DirectionToMove.DownLeft => directionToMoveIcons[6],
+            DirectionToMove.Left => directionToMoveIcons[7],
+            DirectionToMove.UpLeft => directionToMoveIcons[8],
+            _ => directionToMoveIcons[0],
+        };
     }
 }

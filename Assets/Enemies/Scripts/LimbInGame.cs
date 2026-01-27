@@ -80,4 +80,15 @@ public class LimbInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         return currentHealth <= 0;
     }
+    public bool IsOfType(LimbTag tag)
+    {
+        foreach (LimbTag limbTag in limbTags)
+        {
+            if (limbTag == tag)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

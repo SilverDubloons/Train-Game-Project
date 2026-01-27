@@ -62,6 +62,7 @@ public class HandArea : MonoBehaviour
             yield return new WaitForSeconds(timeBetweenDraws / Preferences.instance.gameSpeed);
         }
         GameDeck.instance.UpdateTopDeckCard();
+        CombatManager.instance.SetCanEndTurn(true);
         drawingCards = false;
     }
     private void ReorganizeHand()
@@ -232,6 +233,20 @@ public class HandArea : MonoBehaviour
         }
         SoundManager.instance.PlayCardSlideSound();
         selectedCards.Clear();
+        ReorganizeHand();
+        SelectedCardsUpdated();
+    }
+    public void TurnEnded()
+    {
+        List<Card> cardsInHand = GetCardsInHand();
+        if (cardsInHand.Count > 0)
+        {
+            SoundManager.instance.PlayCardSlideSound();
+        }
+        for (int i = 0; i < cardsInHand.Count; i++)
+        {
+            cardsInHand[i].CardPlayed();
+        }
         ReorganizeHand();
         SelectedCardsUpdated();
     }

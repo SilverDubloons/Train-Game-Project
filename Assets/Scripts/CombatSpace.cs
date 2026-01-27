@@ -83,4 +83,8 @@ public class CombatSpace : MonoBehaviour
         CombatArea.instance.SetPlayerPosition(this);
         HandArea.instance.HandPlayed();
     }
+    public bool EnemyInSpace()
+    {
+        return occupyingEnemy != null;
+    }
 }

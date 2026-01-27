@@ -15,12 +15,18 @@ public class CombatManager : MonoBehaviour
     private bool aiming = false;
     private IEnumerator targetingCoroutine = null;
     private LimbInGame currentLimbMouseOver = null;
+    [SerializeField] private ButtonPlus endTurnButton;
     public void SetupInstance()
     {
         instance = this;
     }
+    public void SetCanEndTurn(bool canEndTurn)
+    {
+        endTurnButton.SetButtonEnabled(canEndTurn);
+    }
     public void SetupCombat(Encounter encounter)
     {
+        SetCanEndTurn(false);
         inCombat = true;
         currentEnemiesInGame.Clear();
         CombatArea.instance.SetupBoard(encounter.boardSize);
@@ -46,12 +52,34 @@ public class CombatManager : MonoBehaviour
         }
         HandArea.instance.StartDrawCards(true);
         CombatArea.instance.SetPlayerPosition(new Vector2Int(RNG.instance.combat.Range(0, encounter.boardSize.x), 0));
+        DetermineEnemyIntents();
     }
-    public void HighlightEnemyAttacks()
+    public void DetermineEnemyIntents()
     {
-        for (int i = 0; i < enemiesInGame.Count; i++)
+        for (int i = 0; i < currentEnemiesInGame.Count; i++)
         {
-
+            currentEnemiesInGame[i].DetermineIntents();
+        }
+    }
+    public void StartEnemyTurn()
+    {
+        currentEnemiesInGame.Sort((a, b) =>
+        {
+            Vector2Int aPos = a.GetCurrentCombatSpace().gridPosition;
+            Vector2Int bPos = b.GetCurrentCombatSpace().gridPosition;
+            if (aPos.y != bPos.y)
+            { 
+                return aPos.y.CompareTo(bPos.y);
+            }
+            return aPos.x.CompareTo(bPos.x);
+        });
+        StartCoroutine(ExecuteEnemyIntents());
+    }
+    public IEnumerator ExecuteEnemyIntents()
+    {
+        for (int i = 0; i < currentEnemiesInGame.Count; i++)
+        {
+            yield return null;
         }
     }
     public void SetTargetingTool(ToolInGame newTargetingTool, bool toolIsAiming)
@@ -251,5 +279,11 @@ public class CombatManager : MonoBehaviour
         currentEnemiesInGame.Remove(defeatedEnemy);
         enemiesInGame.Add(defeatedEnemy);
         defeatedEnemy.SetVisibility(false);
+    }
+    public void ClickEndTurn()
+    {
+        SetCanEndTurn(false);
+        HandArea.instance.TurnEnded();
+        StartEnemyTurn();
     }
 }

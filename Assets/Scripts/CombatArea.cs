@@ -182,4 +182,8 @@ public class CombatArea : MonoBehaviour
             currentCombatSpaces[i, 0].SetInteractability(movableSpaces.Contains(currentCombatSpaces[i, 0]));
         }
     }
+    public CombatSpace[,] GetCurrentCombatSpaces()
+    {
+        return currentCombatSpaces;
+    }
 }

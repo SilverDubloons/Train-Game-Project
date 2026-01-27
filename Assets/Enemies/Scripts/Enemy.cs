@@ -16,4 +16,7 @@ public class Enemy : ScriptableObject
     {
         return spawningPattern.GetSpawnSpace(availableSpaces);
     }
+    [SerializeField] public EnemyAbility[] abilities;
+    [SerializeField] public EnemyBehavior behavior;
+    public bool canMoveDiagonally;
 }

@@ -55,3 +55,7 @@ MonoBehaviour:
   totalSize: {x: 128, y: 124.5}
   spawningPattern: {fileID: 11400000, guid: efd1c754f37a09440892df466bc9d6ca, type: 2}
   crosshairColor: {r: 1, g: 1, b: 1, a: 1}
+  abilities:
+  - {fileID: 11400000, guid: 0abb48c7504abcb4c80ab78948373948, type: 2}
+  behavior: {fileID: 11400000, guid: 2263ba5c4cee39445b9ab8a5f7c89a3f, type: 2}
+  canMoveDiagonally: 0

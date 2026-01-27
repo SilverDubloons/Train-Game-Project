@@ -16,9 +16,10 @@ public class EnemyInGame : MonoBehaviour
     private Vector2 spriteCenter;
     private Vector2 spriteTotalSize;
     private CombatSpace currentCombatSpace;
-    
+    private Enemy baseEnemy;
     public void SetupEnemyInGame(Enemy enemy)
     {
+        baseEnemy = enemy;
         name = enemy.enemyName;
         enemyTag = enemy.enemyTag;
         enemyName = enemy.enemyName;
@@ -107,5 +108,52 @@ public class EnemyInGame : MonoBehaviour
             currentHealth = 0;
             CombatManager.instance.EnemyDefeated(this);
         }
+    }
+    public void DetermineIntents()
+    { 
+        List<EnemyIntent> intents = baseEnemy.behavior.GetIntents(this, CombatArea.instance.GetCurrentCombatSpaces(), CombatArea.instance.GetPlayerSpace());
+        for(int i = 0; i < intents.Count; i++)
+        {
+            switch (intents[i].GetIntentType())
+            { 
+                case IntentType.Attack:
+                    EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[i];
+                    Logger.instance.Log($"{enemyName} at {currentCombatSpace.gridPosition} attack intent: {intents[i].intentName}");
+                    break;
+                case IntentType.Move:
+                    EnemyIntentMove enemyIntentMove = (EnemyIntentMove)intents[i];
+                    Logger.instance.Log($"{enemyName} at {currentCombatSpace.gridPosition} move intent: {enemyIntentMove.directionToMove}");
+                    break;
+            }
+        }
+    }
+    public Enemy GetBaseEnemy()
+    {
+        return baseEnemy;
+    }
+    public bool EnemyMeetsLimbRequirements(LimbRequirement[] limbRequirements)
+    {
+        foreach(LimbRequirement requirement in limbRequirements)
+        {
+            int numberOfLimbsMet = 0;
+            bool requirementMet = false;
+            foreach (LimbInGame limbInGame in currentLimbInGames)
+            {
+                if (limbInGame.IsOfType(requirement.limbTag))
+                {
+                    numberOfLimbsMet++;
+                    if (numberOfLimbsMet >= requirement.numberRequired)
+                    {
+                        requirementMet = true;
+                        break;
+                    }
+                }
+            }
+            if(!requirementMet)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
