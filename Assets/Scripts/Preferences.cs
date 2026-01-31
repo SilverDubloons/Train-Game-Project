@@ -10,6 +10,7 @@ public class Preferences : MonoBehaviour
     public float maxTimeBetweenDoubleClicks;
     public int currentTheme = 0;
     public float gameSpeed = 1f;
+    public bool cheatsOn;
 
     [SerializeField] private string preferencesFileName;
     [SerializeField] private string preferencesFileVersion;

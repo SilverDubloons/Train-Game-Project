@@ -23,7 +23,7 @@ public class SoundManager : MonoBehaviour
     {
         instance = this;
     }
-    private void PlaySound(AudioClip[] clips, float volumeFactor = 1f, string soundKey = null, bool randomize = false, bool increment = false)
+    public void PlaySound(AudioClip[] clips, float volumeFactor = 1f, string soundKey = null, bool randomize = false, bool increment = false)
     {
         if (randomize)
         {
@@ -46,7 +46,7 @@ public class SoundManager : MonoBehaviour
             soundIndices[soundKey]++;
         }
     }
-    private void PlaySound(AudioClip clip, float volumeFactor = 1f, string soundKey = null)
+    public void PlaySound(AudioClip clip, float volumeFactor = 1f, string soundKey = null)
     {
         if(!Preferences.instance.soundOn)
         {

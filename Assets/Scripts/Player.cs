@@ -8,7 +8,11 @@ public class Player : MonoBehaviour
     private CombatSpace currentSpace;
     private int maxHealth;
     private int currentHealth;
-
+    public static Player instance;
+    public void SetupInstance()
+    {
+        instance = this;
+    }
     public void SetPlayerPosition(CombatSpace space)
     {
         currentSpace = space;
@@ -22,5 +26,22 @@ public class Player : MonoBehaviour
     public CombatSpace GetCurrentSpace()
     { 
         return currentSpace;
+    }
+    public void SetMaxHealth(int newMaxHealth)
+    { 
+        maxHealth = newMaxHealth;
+    }
+    public void SetCurrentHealth(int newCurrentHealth)
+    { 
+        currentHealth = newCurrentHealth;
+    }
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
+        Logger.instance.Log($"Player took {damage} damage and is now at {currentHealth}/{maxHealth} HP");
     }
 }

@@ -13,7 +13,8 @@ public class EnemyAbilityAttack : EnemyAbility
     public AttackAvailabilityData GetAttackAvailabilityData(EnemyInGame enemy)
     {
         List<CombatSpace> targetableSpaces = new List<CombatSpace>();
-        AttackAvailabilityData attackAvailabilityData = new AttackAvailabilityData(false, false, targetableSpaces);
+        // AttackAvailabilityData attackAvailabilityData = new AttackAvailabilityData(false, false, targetableSpaces);
+        AttackAvailabilityData attackAvailabilityData = new AttackAvailabilityData(false, false);
         CombatSpace currentCombatSpace = enemy.GetCurrentCombatSpace();
         if ((currentCombatSpace.gridPosition.y == 1 && !canBeUsedFromFrontRow) ||
            (currentCombatSpace.gridPosition.y == 2 && !canBeUsedFromBackRow))
@@ -43,7 +44,7 @@ public class EnemyAbilityAttack : EnemyAbility
             return attackAvailabilityData;
         }
         attackAvailabilityData.isAvailable = true;
-        attackAvailabilityData.targetableSpaces = targetableSpaces;
+        // attackAvailabilityData.targetableSpaces = targetableSpaces;
         return attackAvailabilityData;
     }
     public override List<TooltipData> GetTooltipDataList()
@@ -86,7 +87,9 @@ public class EnemyAbilityAttack : EnemyAbility
         }
         int currentRow = combatSpace.gridPosition.y;
         int playerColumn = CombatArea.instance.GetPlayerSpace().gridPosition.x;
-        bool canMoveDiagonally = enemy.GetBaseEnemy().canMoveDiagonally;
+        Enemy baseEnemy = enemy.GetBaseEnemy();
+        bool canMoveDiagonally = baseEnemy.canMoveDiagonally;
+        bool preferColumn = baseEnemy.prefersColumnForMovement;
         if (targetColumn == playerColumn)
         {
             if (currentRow == 1) // front row
@@ -141,19 +144,40 @@ public class EnemyAbilityAttack : EnemyAbility
                     {
                         return new DirectionAndConfident(DirectionToMove.UpRight, true);
                     }
-                    if (!enemyInSpaceToTheRight)
+                    if (preferColumn)
                     {
-                        return new DirectionAndConfident(DirectionToMove.Right, true);
+                        if (!enemyInSpaceToTheRight)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Right, true);
+                        }
+                        if (!enemyInSpaceUp)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Up, true);
+                        }
                     }
-                    if (!enemyInSpaceUp)
+                    else
                     {
-                        return new DirectionAndConfident(DirectionToMove.Up, true);
+                        if (!enemyInSpaceUp)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Up, true);
+                        }
+                        if (!enemyInSpaceToTheRight)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Right, true);
+                        }
                     }
                     if (canMoveDiagonally)
                     {
                         return new DirectionAndConfident(DirectionToMove.UpRight, false);
                     }
-                    return new DirectionAndConfident(DirectionToMove.Right, false);
+                    if (preferColumn && !canBeUsedFromFrontRow && canBeUsedFromBackRow)
+                    {
+                        return new DirectionAndConfident(DirectionToMove.Up, false);
+                    }
+                    else
+                    {
+                        return new DirectionAndConfident(DirectionToMove.Right, false);
+                    }
                 }
                 if (canBeUsedFromFrontRow && canBeUsedFromBackRow)
                 {
@@ -179,19 +203,40 @@ public class EnemyAbilityAttack : EnemyAbility
                     {
                         return new DirectionAndConfident(DirectionToMove.DownRight, true);
                     }
-                    if (!enemyInSpaceToTheRight)
+                    if (preferColumn)
                     {
-                        return new DirectionAndConfident(DirectionToMove.Right, true);
+                        if (!enemyInSpaceToTheRight)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Right, true);
+                        }
+                        if (!enemyInSpaceDown)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Down, true);
+                        }
                     }
-                    if (!enemyInSpaceDown)
+                    else
                     {
-                        return new DirectionAndConfident(DirectionToMove.Down, true);
+                        if (!enemyInSpaceDown)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Down, true);
+                        }
+                        if (!enemyInSpaceToTheRight)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Right, true);
+                        }
                     }
                     if (canMoveDiagonally)
                     {
                         return new DirectionAndConfident(DirectionToMove.DownRight, false);
                     }
-                    return new DirectionAndConfident(DirectionToMove.Right, false);
+                    if (preferColumn && canBeUsedFromFrontRow && !canBeUsedFromBackRow)
+                    {
+                        return new DirectionAndConfident(DirectionToMove.Down, false);
+                    }
+                    else
+                    {
+                        return new DirectionAndConfident(DirectionToMove.Right, false);
+                    }
                 }
                 if (canBeUsedFromBackRow && canBeUsedFromFrontRow)
                 {
@@ -221,19 +266,40 @@ public class EnemyAbilityAttack : EnemyAbility
                     {
                         return new DirectionAndConfident(DirectionToMove.UpLeft, true);
                     }
-                    if (!enemyInSpaceToTheLeft)
+                    if (preferColumn)
                     {
-                        return new DirectionAndConfident(DirectionToMove.Left, true);
+                        if (!enemyInSpaceUp)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Up, true);
+                        }
+                        if (!enemyInSpaceToTheLeft)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Left, true);
+                        }
                     }
-                    if (!enemyInSpaceUp)
+                    else
                     {
-                        return new DirectionAndConfident(DirectionToMove.Up, true);
+                        if (!enemyInSpaceToTheLeft)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Left, true);
+                        }
+                        if (!enemyInSpaceUp)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Up, true);
+                        }
                     }
                     if (canMoveDiagonally)
                     {
                         return new DirectionAndConfident(DirectionToMove.UpLeft, false);
                     }
-                    return new DirectionAndConfident(DirectionToMove.Left, false);
+                    if (preferColumn && !canBeUsedFromFrontRow && canBeUsedFromBackRow)
+                    {
+                        return new DirectionAndConfident(DirectionToMove.Up, false);
+                    }
+                    else
+                    {
+                        return new DirectionAndConfident(DirectionToMove.Left, false);
+                    }
                 }
                 if (canBeUsedFromFrontRow && canBeUsedFromBackRow)
                 {
@@ -249,6 +315,7 @@ public class EnemyAbilityAttack : EnemyAbility
             {
                 bool enemyInSpaceToTheDownLeft = CombatArea.instance.GetCombatSpaceAtPosition(new Vector2Int(combatSpace.gridPosition.x - 1, combatSpace.gridPosition.y - 1)).EnemyInSpace();
                 bool enemyInSpaceDown = CombatArea.instance.GetCombatSpaceAtPosition(new Vector2Int(combatSpace.gridPosition.x, combatSpace.gridPosition.y - 1)).EnemyInSpace();
+                // Logger.instance.Log($"Determining intent for {enemy.GetBasicInfo()}. enemyInSpaceToTheLeft: {enemyInSpaceToTheLeft} enemyInSpaceToTheDownLeft: {enemyInSpaceToTheDownLeft}, enemyInSpaceDown: {enemyInSpaceDown}, canMoveDiagonally: {canMoveDiagonally}, preferColumn: {preferColumn}, canBeUsedFromBackRow: {canBeUsedFromBackRow}, canBeUsedFromFrontRow: {canBeUsedFromFrontRow}");
                 if (canBeUsedFromBackRow && !canBeUsedFromFrontRow)
                 {
                     return new DirectionAndConfident(DirectionToMove.Left, !enemyInSpaceToTheLeft);
@@ -259,19 +326,40 @@ public class EnemyAbilityAttack : EnemyAbility
                     {
                         return new DirectionAndConfident(DirectionToMove.DownLeft, true);
                     }
-                    if (!enemyInSpaceToTheLeft)
+                    if (preferColumn)
                     {
-                        return new DirectionAndConfident(DirectionToMove.Left, true);
+                        if (!enemyInSpaceDown)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Down, true);
+                        }
+                        if (!enemyInSpaceToTheLeft)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Left, true);
+                        }
                     }
-                    if (!enemyInSpaceDown)
+                    else
                     {
-                        return new DirectionAndConfident(DirectionToMove.Down, true);
+                        if (!enemyInSpaceToTheLeft)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Left, true);
+                        }
+                        if (!enemyInSpaceDown)
+                        {
+                            return new DirectionAndConfident(DirectionToMove.Down, true);
+                        }
                     }
                     if (canMoveDiagonally)
                     {
                         return new DirectionAndConfident(DirectionToMove.DownLeft, false);
                     }
-                    return new DirectionAndConfident(DirectionToMove.Left, false);
+                    if (preferColumn)
+                    {
+                        return new DirectionAndConfident(DirectionToMove.Down, false);
+                    }
+                    else
+                    {
+                        return new DirectionAndConfident(DirectionToMove.Left, false);
+                    }
                 }
                 if (canBeUsedFromBackRow && canBeUsedFromFrontRow)
                 {
@@ -290,12 +378,13 @@ public struct AttackAvailabilityData
 { 
     public bool isAvailable;
     public bool playerInRange;
-    public List<CombatSpace> targetableSpaces;
-    public AttackAvailabilityData(bool isAvailable, bool playerInRange, List<CombatSpace> targetableSpaces)
+    // public List<CombatSpace> targetableSpaces;
+    // public AttackAvailabilityData(bool isAvailable, bool playerInRange, List<CombatSpace> targetableSpaces)
+    public AttackAvailabilityData(bool isAvailable, bool playerInRange)
     {
         this.isAvailable = isAvailable;
         this.playerInRange = playerInRange;
-        this.targetableSpaces = targetableSpaces;
+        // this.targetableSpaces = targetableSpaces;
     }
 }
 public enum DirectionToMove
@@ -329,4 +418,6 @@ public struct DirectionAndConfident
     On enemy movement, enemy should always move to the space that gets it closer to being able to use their abiliy that has the highest priority and that is available. Their ability list should be sorted by priority.
 
     When determining best direction to move, enemies prefer to be in the appropriate column before being in the appropriate row.
+
+    Rethinking this, perhaps they should prefer the appropriate row first, so that they can use their attack, even on empty squares. This could be something to tinker with depending on combat feel.
 */

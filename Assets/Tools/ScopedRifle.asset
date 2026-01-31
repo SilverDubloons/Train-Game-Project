@@ -16,8 +16,8 @@ MonoBehaviour:
   toolTag: ScopedRifle
   toolDescription: Aim at their limbs
   toolIcon: {fileID: 1818496280, guid: c52fa710d48bce3448863d22c4ff8614, type: 3}
-  handStyle: 1
-  cardsRequired: 2
+  handStyle: 3
+  cardsRequired: 3
   toolTargetStyle: 1
   adjacentColumnsTarget: 0
   areaOfEffectRadius: 0

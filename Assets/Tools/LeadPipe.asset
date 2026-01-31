@@ -16,7 +16,7 @@ MonoBehaviour:
   toolTag: LeadPipe
   toolDescription: Whack 'em smack 'em
   toolIcon: {fileID: -1986447, guid: c52fa710d48bce3448863d22c4ff8614, type: 3}
-  handStyle: 1
+  handStyle: 4
   cardsRequired: 2
   toolTargetStyle: 0
   adjacentColumnsTarget: 0

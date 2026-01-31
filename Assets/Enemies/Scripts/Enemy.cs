@@ -19,4 +19,5 @@ public class Enemy : ScriptableObject
     [SerializeField] public EnemyAbility[] abilities;
     [SerializeField] public EnemyBehavior behavior;
     public bool canMoveDiagonally;
+    public bool prefersColumnForMovement; // when true, enemy will try to get into appropriate column first, when false, enemy will prefer to get into appropriate row first (more dangerous)
 }

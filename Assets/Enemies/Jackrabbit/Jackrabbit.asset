@@ -59,3 +59,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0abb48c7504abcb4c80ab78948373948, type: 2}
   behavior: {fileID: 11400000, guid: 2263ba5c4cee39445b9ab8a5f7c89a3f, type: 2}
   canMoveDiagonally: 0
+  prefersColumnForMovement: 1

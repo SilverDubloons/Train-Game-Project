@@ -2,6 +2,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class Card : MonoBehaviour, IPointerClickHandler
@@ -36,6 +37,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
             bigSuitImage.gameObject.SetActive(false);
             detailImageRT.anchoredPosition = Vector2.zero;
             detailImage.color = Color.white;
+            // get detail image
             name = cardData.specialCardType.ToString();
             return;
         }
@@ -145,10 +147,105 @@ public class Card : MonoBehaviour, IPointerClickHandler
     }
     public void OnPointerClick(PointerEventData eventData)
     {
+        CheckCheatInput();
         if (canMove)
         {
             HandArea.instance.CardClickedOn(this);
         }
+    }
+    private void CheckCheatInput()
+    {
+        if (!Preferences.instance.cheatsOn)
+        {
+            return;
+        }
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null)
+        {
+            return;
+        }
+        if (keyboard.sKey.isPressed)
+        {
+            ChangeSuit(Suit.Spade);
+        }
+        if (keyboard.cKey.isPressed)
+        {
+            ChangeSuit(Suit.Club);
+        }
+        if (keyboard.hKey.isPressed)
+        {
+            ChangeSuit(Suit.Heart);
+        }
+        if (keyboard.dKey.isPressed)
+        {
+            ChangeSuit(Suit.Diamond);
+        }
+        if (keyboard.rKey.isPressed)
+        {
+            ChangeSuit(Suit.Rainbow);
+        }
+        if (keyboard.digit2Key.isPressed)
+        {
+            ChangeRank(0);
+        }
+        if (keyboard.digit3Key.isPressed)
+        {
+            ChangeRank(1);
+        }
+        if (keyboard.digit4Key.isPressed)
+        {
+            ChangeRank(2);
+        }
+        if (keyboard.digit5Key.isPressed)
+        {
+            ChangeRank(3);
+        }
+        if (keyboard.digit6Key.isPressed)
+        {
+            ChangeRank(4);
+        }
+        if (keyboard.digit7Key.isPressed)
+        {
+            ChangeRank(5);
+        }
+        if (keyboard.digit8Key.isPressed)
+        {
+            ChangeRank(6);
+        }
+        if (keyboard.digit9Key.isPressed)
+        {
+            ChangeRank(7);
+        }
+        if (keyboard.digit0Key.isPressed)
+        {
+            ChangeRank(8);
+        }
+        if (keyboard.jKey.isPressed)
+        {
+            ChangeRank(9);
+        }
+        if (keyboard.qKey.isPressed)
+        {
+            ChangeRank(10);
+        }
+        if (keyboard.kKey.isPressed)
+        {
+            ChangeRank(11);
+        }
+        if (keyboard.aKey.isPressed)
+        {
+            ChangeRank(12);
+        }
+    }
+    private void ChangeRank(int newRank)
+    {
+        cardData.rank = newRank;
+        UpdateGraphics();
+    }
+    private void ChangeSuit(Suit newSuit)
+    { 
+        cardData.suit = newSuit;
+        UpdateGraphics();
     }
     public void CardSelected()
     {

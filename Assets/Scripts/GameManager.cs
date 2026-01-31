@@ -13,7 +13,10 @@ public class GameManager : MonoBehaviour
     }
     public int GetMaxHandSize()
     {
-        return 15;
+        int maxHandSize = 7;
+        // maxHandSize += Baubles.instance.GetImpactInt("IncreaseHandSize");
+        // maxHandSize += MetaProgression.instance.GetImpactInt("IncreaseHandSize");
+        return maxHandSize;
     }
     public int GetMaxGapInStraights()
     {

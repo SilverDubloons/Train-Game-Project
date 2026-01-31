@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e38e8db1d170561428ce53ebe430e0c4, type: 3}
+  m_Name: Explosion
+  m_EditorClassIdentifier: Assembly-CSharp::ActionAnimation
+  actionAnimationTag: Explosion
+  sprites:
+  - {fileID: -8092295105046505211, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -5243772346084840235, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -4009157606203222040, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 3730887761424324059, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -4927540249515241657, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 5684552838703836615, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -1000500801407918923, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -3556220708966662747, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 950242065716622878, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 1871906383385562927, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -5371098934410574880, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -1551774312519300948, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 8761117149865828687, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 2349602722129606322, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 7773491377804077996, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 1467323325375670837, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 4542189021846940948, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -8590846737339631838, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 3996794502770762282, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -5328293131749856865, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 8757869890930774319, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: 5583760979089145045, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  - {fileID: -6611490010577821925, guid: 4e058e49218811840af10b61115a2b0a, type: 3}
+  framesPerSecond: 30
+  centerOnTarget: 1
+  audioClip: {fileID: 8300000, guid: dac5b46bdf924294091cba7126184f50, type: 3}
+  audioClipVolumeFactor: 0.5

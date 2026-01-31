@@ -265,6 +265,7 @@ MonoBehaviour:
   encounters:
   - {fileID: 11400000, guid: 9e68bdeae1e1bb84291a31903ccdf264, type: 2}
   - {fileID: 11400000, guid: d72ecba5ec2df2143a62c25fcb038778, type: 2}
+  - {fileID: 11400000, guid: 3da72774323b25e4794320cddd86753b, type: 2}
   tools:
   - {fileID: 11400000, guid: 9d2f8e63ac3f567489b8a3898ee13d17, type: 2}
   - {fileID: 11400000, guid: 9d23be749d3fedd4b89846d2c6c3ddee, type: 2}
@@ -2535,6 +2536,7 @@ MonoBehaviour:
   maxTimeBetweenDoubleClicks: 0
   currentTheme: 0
   gameSpeed: 1
+  cheatsOn: 1
   preferencesFileName: 
   preferencesFileVersion: 
 --- !u!224 &1458066690

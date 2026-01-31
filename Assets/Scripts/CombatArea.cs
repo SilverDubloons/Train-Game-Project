@@ -9,6 +9,7 @@ public class CombatArea : MonoBehaviour
     [SerializeField] private Backdrop backdrop;
     [SerializeField] private GameObject combatSpacePrefab;
     [SerializeField] private RectTransform combatSpaceParent;
+    public RectTransform looseCharactersParent;
     [SerializeField] private Player player;
     private List<CombatSpace> combatSpaces = new List<CombatSpace>();
     // private List<CombatSpace> currentCombatSpaces = new List<CombatSpace>();
@@ -185,5 +186,50 @@ public class CombatArea : MonoBehaviour
     public CombatSpace[,] GetCurrentCombatSpaces()
     {
         return currentCombatSpaces;
+    }
+    public CombatSpace GetRelativeSpace(CombatSpace origin, DirectionToMove directionToMove)
+    {
+        Vector2Int destinationVector = origin.gridPosition + r.i.interf.ConvertDirectionToMoveToVector2Int(directionToMove);
+        if (IsPositionInCombatArea(destinationVector))
+        {
+            return GetCombatSpaceAtPosition(destinationVector);
+        }
+        return null;
+    }
+    public void CombatAreaFinishedMovingOnScreen()
+    {
+        CombatManager.instance.SetAllEnemiesToLooseParent();
+    }
+    public void ResetEnemiesTargeting()
+    {
+        for (int x = 0; x < currentCombatSpaces.GetLength(0); x++)
+        {
+            currentCombatSpaces[x, 0].ResetCurrentIntentAttacks();
+        }
+    }
+    public void EnemyIntentsDetermined()
+    {
+        for (int x = 0; x < currentCombatSpaces.GetLength(0); x++)
+        {
+            currentCombatSpaces[x, 0].EnemyIntentsDetermined();
+        }
+    }
+    public void HighlightEnemyAttack(int enemyColumn, int affectedColumn, EnemyIntentAttack enemyIntentAttack)
+    {
+        Vector2Int targetedSpace = new Vector2Int(enemyColumn + affectedColumn, 0);
+        if (!IsPositionInCombatArea(targetedSpace))
+        {
+            return;
+        }
+        currentCombatSpaces[targetedSpace.x, targetedSpace.y].AddEnemyIntentAttack(enemyIntentAttack);
+    }
+    public void RemoveEnemyIntent(int enemyColumn, int affectedColumn, EnemyIntentAttack enemyIntentAttack)
+    {
+        Vector2Int targetedSpace = new Vector2Int(enemyColumn + affectedColumn, 0);
+        if (!IsPositionInCombatArea(targetedSpace))
+        {
+            return;
+        }
+        currentCombatSpaces[targetedSpace.x, targetedSpace.y].RemoveEnemyIntentAtack(enemyIntentAttack);
     }
 }

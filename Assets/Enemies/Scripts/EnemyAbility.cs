@@ -10,6 +10,7 @@ public abstract class EnemyAbility : ScriptableObject
     //public abstract bool IsAvailable(EnemyInGame enemy);
     public abstract List<TooltipData> GetTooltipDataList();
     public abstract AbilityType GetAbilityType();
+    public ActionAnimation actionAnimation;
 }
 [System.Serializable]
 public struct LimbRequirement

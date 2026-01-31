@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Bite_8
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAbilityAttack
   abilityName: Bite
-  icon: {fileID: -395371393, guid: 28f448cc2174b58418f7bd1dcb905a19, type: 3}
+  icon: {fileID: -262779722, guid: ad57642d10d51f14c859148e888d51c8, type: 3}
   cooldown: 0
   limbRequirements:
   - limbTag: 2
     numberRequired: 1
+  actionAnimation: {fileID: 11400000, guid: 24856e4d5d5283e4d887edf83dd21076, type: 2}
   damage: 8
   canBeUsedFromFrontRow: 1
   canBeUsedFromBackRow: 0

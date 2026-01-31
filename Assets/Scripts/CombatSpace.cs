@@ -1,16 +1,19 @@
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Collections.Generic;
 public class CombatSpace : MonoBehaviour
 {
     [SerializeField] private ButtonPlus buttonPlus;
     [SerializeField] private GameObject visibilityObject;
-    [SerializeField] private RectTransform rt;
+    public RectTransform rt;
     [SerializeField] private RectTransform characterParent;
-    [SerializeField] private GameObject slectableObject;
+    // [SerializeField] private GameObject slectableObject;
+    [SerializeField] private PingPongMovement[] pingPongMovements;
     public Vector2Int gridPosition;
     public EnemyInGame occupyingEnemy;
     private bool targetable;
+    private List<EnemyIntentAttack> currentIntentAttacks = new List<EnemyIntentAttack>();
     public void SetVisibility(bool visible)
     {
         if (!visible)
@@ -31,7 +34,7 @@ public class CombatSpace : MonoBehaviour
     {
         return occupyingEnemy == null;
     }
-    public void PlaceEnemyInSpace(EnemyInGame enemy)
+    public void PlaceEnemyInSpace(EnemyInGame enemy, bool moveToSpace, bool setAsParent = false)
     {
         occupyingEnemy = enemy;
         if(enemy == null)
@@ -39,7 +42,7 @@ public class CombatSpace : MonoBehaviour
             Logger.instance.Error("CombatSpace.PlaceEnemyInSpace: enemy is null");
             return;
         }
-        enemy.SetParent(characterParent, this);
+        enemy.SetCurrentCombatSpace(this, moveToSpace, setAsParent ? characterParent : null);
     }
     public void PlacePlayerInSpace(Player player)
     {
@@ -48,10 +51,29 @@ public class CombatSpace : MonoBehaviour
     public void SetTargetable(bool newTargetableState, bool aiming)
     {
         targetable = newTargetableState;
-        slectableObject.SetActive(newTargetableState);
+        // slectableObject.SetActive(newTargetableState);
+        SetHighlight(targetable ? 2 : 0, r.i.themeManager.GetColorFromCurrentTheme(UIElementType.targetableSpacePlayer));
         if (occupyingEnemy != null)
         {
             occupyingEnemy.SetVisibilityOfLimbCrosshairs(aiming);
+        }
+    }
+    public void SetTargetableByEnemy(int numberOfAttacks)
+    {
+        SetHighlight(numberOfAttacks, r.i.themeManager.GetColorFromCurrentTheme(UIElementType.targetableSpaceEnemy));
+    }
+    private void SetHighlight(int numberOfHighligts, Color newColor)
+    {
+        for (int i = 0; i < pingPongMovements.Length; i++)
+        {
+            if (i < numberOfHighligts)
+            {
+                pingPongMovements[i].Setup(i / numberOfHighligts, newColor);
+            }
+            else
+            {
+                pingPongMovements[i].Deactivate();
+            }
         }
     }
     public bool IsTargetable()
@@ -86,5 +108,35 @@ public class CombatSpace : MonoBehaviour
     public bool EnemyInSpace()
     {
         return occupyingEnemy != null;
+    }
+    public RectTransform GetRectTransform()
+    {
+        return rt;
+    }
+    public void AttackMissedHere()
+    {
+        // in case I want to add a little animation
+    }
+    public void ResetCurrentIntentAttacks()
+    {
+        currentIntentAttacks.Clear();
+    }
+    public void AddEnemyIntentAttack(EnemyIntentAttack enemyIntentAttack)
+    {
+        currentIntentAttacks.Add(enemyIntentAttack);
+    }
+    public void EnemyIntentsDetermined()
+    {
+        SetHighlight(currentIntentAttacks.Count, r.i.themeManager.GetColorFromCurrentTheme(UIElementType.targetableSpaceEnemy));
+    }
+    public void RemoveEnemyIntentAtack(EnemyIntentAttack enemyIntentAttack)
+    { 
+        if(!currentIntentAttacks.Contains(enemyIntentAttack))
+        {
+            Logger.instance.Warning($"Attempted to remove enemyIntentAttack {enemyIntentAttack.intentName} from {gridPosition} but it was not in currentIntentAttacks");
+            return;
+        }
+        currentIntentAttacks.Remove(enemyIntentAttack);
+        EnemyIntentsDetermined();
     }
 }

@@ -49,8 +49,20 @@ public class OneAbilityOneMove : EnemyBehavior
                     intent.ability = bestAbility;
                     intent.intentName = bestAbility.abilityName;
                     intent.icon = bestAbility.icon;
+                    intent.actionAnimation = bestAbility.actionAnimation;
                     intent.tooltipDatas = bestAbility.GetTooltipDataList();
-                    intent.affectedSpaces = bestAttackAvailabilityData.targetableSpaces;
+                    // intent.affectedSpaces = bestAttackAvailabilityData.targetableSpaces;
+                    EnemyAbilityAttack bestAbilityAttack = (EnemyAbilityAttack)bestAbility;
+                    intent.affectedColumns = bestAbilityAttack.affectedColumns;
+                    intent.damage = bestAbilityAttack.damage;
+                    List<TooltipData> tooltipDatas = new List<TooltipData>();
+                    tooltipDatas.Add(new TooltipData(intent.intentName, UIElementType.tooltipName));
+                    tooltipDatas.Add(new TooltipData($"{intent.damage.ToString()} Damage", UIElementType.tooltipDamage));
+                    if (intent.affectedColumns.Length == 1 && intent.affectedColumns[0] == 0)
+                    {
+                        tooltipDatas.Add(new TooltipData("Same Column", UIElementType.tooltipSpecial));
+                    }
+                    intent.tooltipDatas = tooltipDatas;
                     intents.Add(intent);
                     break;
             }
@@ -78,6 +90,7 @@ public class OneAbilityOneMove : EnemyBehavior
             {
                 EnemyIntentMove moveIntent = new EnemyIntentMove();
                 moveIntent.directionToMove = directionAndConfident.directionToMove;
+                moveIntent.icon = r.i.interf.ConvertDirectionToMoveToSprite(moveIntent.directionToMove);
                 moveIntent.intentName = $"Move {r.i.interf.ConvertDirectionToMoveToString(directionAndConfident.directionToMove)}";
                 List<TooltipData> tooltipDatas = new List<TooltipData>();
                 tooltipDatas.Add(new TooltipData(moveIntent.intentName, UIElementType.tooltipName));

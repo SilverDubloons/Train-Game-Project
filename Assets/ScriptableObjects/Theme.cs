@@ -23,4 +23,6 @@ public class Theme : ScriptableObject
     public Color uncommon;
     public Color rare;
     public Color legendary;
+    public Color targetableSpacePlayer;
+    public Color targetableSpaceEnemy;
 }

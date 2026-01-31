@@ -16,8 +16,8 @@ MonoBehaviour:
   toolTag: SteamThrower
   toolDescription: It's like a flamethrower but for steam
   toolIcon: {fileID: 1467324533, guid: c52fa710d48bce3448863d22c4ff8614, type: 3}
-  handStyle: 1
-  cardsRequired: 2
+  handStyle: 2
+  cardsRequired: 4
   toolTargetStyle: 2
   adjacentColumnsTarget: 0
   areaOfEffectRadius: 0

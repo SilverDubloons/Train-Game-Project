@@ -21,5 +21,5 @@ MonoBehaviour:
   toolTargetStyle: 3
   adjacentColumnsTarget: 0
   areaOfEffectRadius: 0
-  damage: 5
+  damage: 4
   toolSpecialTags: 02000000

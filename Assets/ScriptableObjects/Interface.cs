@@ -243,16 +243,32 @@ public class Interface : ScriptableObject
     {
         return directionToMove switch
         {
-            DirectionToMove.None => directionToMoveIcons[0],
-            DirectionToMove.Up => directionToMoveIcons[1],
-            DirectionToMove.UpRight => directionToMoveIcons[2],
-            DirectionToMove.Right => directionToMoveIcons[3],
-            DirectionToMove.DownRight => directionToMoveIcons[4],
-            DirectionToMove.Down => directionToMoveIcons[5],
-            DirectionToMove.DownLeft => directionToMoveIcons[6],
-            DirectionToMove.Left => directionToMoveIcons[7],
-            DirectionToMove.UpLeft => directionToMoveIcons[8],
-            _ => directionToMoveIcons[0],
+            DirectionToMove.None => rankSprites[0],
+            DirectionToMove.Up => directionToMoveIcons[0],
+            DirectionToMove.UpRight => directionToMoveIcons[1],
+            DirectionToMove.Right => directionToMoveIcons[2],
+            DirectionToMove.DownRight => directionToMoveIcons[3],
+            DirectionToMove.Down => directionToMoveIcons[4],
+            DirectionToMove.DownLeft => directionToMoveIcons[5],
+            DirectionToMove.Left => directionToMoveIcons[6],
+            DirectionToMove.UpLeft => directionToMoveIcons[7],
+            _ => rankSprites[0],
+        };
+    }
+    public Vector2Int ConvertDirectionToMoveToVector2Int(DirectionToMove directionToMove)
+    {
+        return directionToMove switch
+        {
+            DirectionToMove.None => new Vector2Int(0, 0),
+            DirectionToMove.Up => new Vector2Int(0, 1),
+            DirectionToMove.UpRight => new Vector2Int(1, 1),
+            DirectionToMove.Right => new Vector2Int(1, 0),
+            DirectionToMove.DownRight => new Vector2Int(1, -1),
+            DirectionToMove.Down => new Vector2Int(0, -1),
+            DirectionToMove.DownLeft => new Vector2Int(-1, -1),
+            DirectionToMove.Left => new Vector2Int(-1, 0),
+            DirectionToMove.UpLeft => new Vector2Int(-1, 1),
+            _ => new Vector2Int(0, 0),
         };
     }
 }
