@@ -81,16 +81,23 @@ public class EnemyAbilityAttack : EnemyAbility
             return new DirectionAndConfident(DirectionToMove.None, false);
         }
         int targetColumn = combatSpace.gridPosition.x + affectedColumns[columnToConsider];
-        if (targetColumn < 0 || targetColumn >= CombatArea.instance.currentBoardSize.x)
+        /*if (targetColumn < 0 || targetColumn >= CombatArea.instance.currentBoardSize.x)
         {
             return new DirectionAndConfident(DirectionToMove.None, false);
-        }
+        }*/
         int currentRow = combatSpace.gridPosition.y;
         int playerColumn = CombatArea.instance.GetPlayerSpace().gridPosition.x;
         Enemy baseEnemy = enemy.GetBaseEnemy();
         bool canMoveDiagonally = baseEnemy.canMoveDiagonally;
         bool preferColumn = baseEnemy.prefersColumnForMovement;
-        if (targetColumn == playerColumn)
+        int columnDifference = targetColumn - playerColumn;
+        int enemyColumn = enemy.GetCurrentCombatSpace().gridPosition.x;
+        bool enemyOnFarLeft = enemyColumn == 0;
+        bool enemyOnFarRight = enemyColumn == CombatArea.instance.currentBoardSize.x - 1;
+        bool enemyInSameColumnAsPlayer = targetColumn == playerColumn;
+        bool playerToTheRightOfTargetColumn = targetColumn < playerColumn;
+        bool playerToTheLeftOfTargetColumn = targetColumn > playerColumn;
+        if (enemyInSameColumnAsPlayer || (playerToTheRightOfTargetColumn && enemyOnFarRight) || (playerToTheLeftOfTargetColumn && enemyOnFarLeft))
         {
             if (currentRow == 1) // front row
             {
@@ -127,13 +134,28 @@ public class EnemyAbilityAttack : EnemyAbility
                 return new DirectionAndConfident(DirectionToMove.None, false);
             }
         }
-        else if (targetColumn < playerColumn) // player is to the right
+        else if (playerToTheRightOfTargetColumn) // player is to the right of target column, and enemy is not on the far right
         {
-            bool enemyInSpaceToTheRight = CombatArea.instance.GetCombatSpaceAtPosition(new Vector2Int(combatSpace.gridPosition.x + 1, combatSpace.gridPosition.y)).EnemyInSpace();
+            Vector2Int spaceToRightVector = new Vector2Int(combatSpace.gridPosition.x + 1, combatSpace.gridPosition.y);
+            bool enemyInSpaceToTheRight = false;
+            if(CombatArea.instance.IsPositionInCombatArea(spaceToRightVector))
+            {   // this has to be true as it is right now, since now we're making sure enemy is not on the far right
+                enemyInSpaceToTheRight = CombatArea.instance.GetCombatSpaceAtPosition(spaceToRightVector).EnemyInSpace();
+            }
             if (currentRow == 1) // front row, player to the right
             {
-                bool enemyInSpaceToTheUpRight = CombatArea.instance.GetCombatSpaceAtPosition(new Vector2Int(combatSpace.gridPosition.x + 1, combatSpace.gridPosition.y + 1)).EnemyInSpace();
-                bool enemyInSpaceUp = CombatArea.instance.GetCombatSpaceAtPosition(new Vector2Int(combatSpace.gridPosition.x, combatSpace.gridPosition.y + 1)).EnemyInSpace();
+                Vector2Int spaceToUpRightVector = new Vector2Int(combatSpace.gridPosition.x + 1, combatSpace.gridPosition.y + 1);
+                bool enemyInSpaceToTheUpRight = false;
+                if (CombatArea.instance.IsPositionInCombatArea(spaceToUpRightVector))
+                {
+                    enemyInSpaceToTheRight = CombatArea.instance.GetCombatSpaceAtPosition(spaceToRightVector).EnemyInSpace();
+                }
+                else
+                { 
+                    // return?
+                }
+                    // CombatArea.instance.GetCombatSpaceAtPosition()).EnemyInSpace();
+                    bool enemyInSpaceUp = CombatArea.instance.GetCombatSpaceAtPosition(new Vector2Int(combatSpace.gridPosition.x, combatSpace.gridPosition.y + 1)).EnemyInSpace();
                 if (canBeUsedFromFrontRow && !canBeUsedFromBackRow)
                 {
                     return new DirectionAndConfident(DirectionToMove.Right, !enemyInSpaceToTheRight);
@@ -251,6 +273,10 @@ public class EnemyAbilityAttack : EnemyAbility
         }
         else // player is to the left
         {
+            if (combatSpace.gridPosition.x - 1 < 0)
+            {
+                return new DirectionAndConfident(DirectionToMove.None, false);
+            }
             bool enemyInSpaceToTheLeft = CombatArea.instance.GetCombatSpaceAtPosition(new Vector2Int(combatSpace.gridPosition.x - 1, combatSpace.gridPosition.y)).EnemyInSpace();
             if (currentRow == 1) // front row, player to the left
             {

@@ -68,7 +68,7 @@ public class CombatSpace : MonoBehaviour
         {
             if (i < numberOfHighligts)
             {
-                pingPongMovements[i].Setup(i / numberOfHighligts, newColor);
+                pingPongMovements[i].Setup((float)i / (float)numberOfHighligts, newColor);
             }
             else
             {
@@ -138,5 +138,9 @@ public class CombatSpace : MonoBehaviour
         }
         currentIntentAttacks.Remove(enemyIntentAttack);
         EnemyIntentsDetermined();
+    }
+    public string GetBasicInfo()
+    {
+        return ($"{gridPosition}");
     }
 }

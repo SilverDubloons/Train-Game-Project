@@ -7,7 +7,7 @@ public class PingPongMovement : MonoBehaviour
     [SerializeField] private Vector3 startPosition;
     [SerializeField] private Vector3 endPosition;
     [SerializeField] private float cycleTime;
-    private float awakeFactor;
+    // private float awakeFactor;
     private float timeAwake;
     private void Update()
     { 
@@ -21,7 +21,7 @@ public class PingPongMovement : MonoBehaviour
     public void Setup(float newAwakeFactor, Color newColor)
     {
         gameObject.SetActive(true);
-        timeAwake = cycleTime * awakeFactor;
+        timeAwake = cycleTime * newAwakeFactor;
         image.color = newColor;
     }
     public void Deactivate()

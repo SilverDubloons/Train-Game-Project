@@ -20,6 +20,6 @@ public class GameplayMenu : MonoBehaviour
         MovingObjects.instance.mo["DrawPile"].StartMove("OnScreen");
         MovingObjects.instance.mo["DiscardPile"].StartMove("OnScreen");
         MovingObjects.instance.mo["EndTurnButtonBackdrop"].StartMove("OnScreen");
-        CombatManager.instance.SetupCombat(r.i.encounterDictionary["EightJackrabbits"]);
+        CombatManager.instance.SetupCombat(r.i.encounterDictionary["MixedCrew"]);
     }
 }

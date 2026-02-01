@@ -17,5 +17,7 @@ public enum LimbTag
     Leg,
     Head,
     Torso,
-    Tail
+    Tail,
+    LeftArm,
+    RightArm
 }
