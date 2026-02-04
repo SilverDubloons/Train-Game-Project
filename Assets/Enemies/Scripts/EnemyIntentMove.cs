@@ -7,4 +7,8 @@ public class EnemyIntentMove : EnemyIntent
     {
         return IntentType.Move;
     }
+    public EnemyIntentMove()
+    { 
+        directionToMove = DirectionToMove.None;
+    }
 }

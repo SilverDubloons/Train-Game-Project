@@ -1,9 +1,5 @@
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor.XR;
 using UnityEngine;
 
 public class HandArea : MonoBehaviour
@@ -11,7 +7,7 @@ public class HandArea : MonoBehaviour
     [SerializeField] private RectTransform rt;
     [SerializeField] private GameObject visibilityObject;
     [SerializeField] private RectTransform handCardsParent;
-    [SerializeField] private Vector2 drawPileLocation;
+    public Vector2 drawPileLocation;
     [SerializeField] private ButtonPlus sortByRankButton;
     [SerializeField] private ButtonPlus sortBySuitButton;
     private int alwaysSortType = 0; // 0 = none, 1 = rank, 2 = suit
@@ -59,6 +55,14 @@ public class HandArea : MonoBehaviour
             topDeckCard.SetFaceUp(false);
             topDeckCard.StartFlip();
             ReorganizeHand();
+            if (GameDeck.instance.GetNumberOfCardsInDrawPile() <= 0)
+            {
+                GameDeck.instance.StartShuffleDiscardPileIntoDrawPile();
+                while (GameDeck.instance.shufflingDiscardPileIntoDrawPile)
+                {
+                    yield return null;
+                }
+            }
             yield return new WaitForSeconds(timeBetweenDraws / Preferences.instance.gameSpeed);
         }
         GameDeck.instance.UpdateTopDeckCard();
@@ -248,6 +252,22 @@ public class HandArea : MonoBehaviour
             cardsInHand[i].CardPlayed();
         }
         ReorganizeHand();
+        selectedCards.Clear();
+        SelectedCardsUpdated();
+    }
+    public void ReturnCardsInHandToDrawPile()
+    {
+        List<Card> cardsInHand = GetCardsInHand();
+        if (cardsInHand.Count > 0)
+        {
+            SoundManager.instance.PlayCardSlideSound();
+        }
+        for (int i = 0; i < cardsInHand.Count; i++)
+        {
+            cardsInHand[i].ReturnCardToDrawPile();
+        }
+        ReorganizeHand();
+        selectedCards.Clear();
         SelectedCardsUpdated();
     }
 }

@@ -16,6 +16,7 @@ public class GameplayStart : MonoBehaviour
     [SerializeField] private CardBurning cardBurning;
     [SerializeField] private Player player;
     [SerializeField] private ActionAnimators actionAnimators;
+    [SerializeField] private GameplayMenu gameplayMenu;
     void Awake()
     {
         combatArea.SetupInstance();
@@ -30,6 +31,7 @@ public class GameplayStart : MonoBehaviour
         cardBurning.SetupInstance();
         player.SetupInstance();
         actionAnimators.SetupInstance();
+        gameplayMenu.SetupInstance();
         
         bool loadingGame = false;
         if (loadingGame)
@@ -42,6 +44,7 @@ public class GameplayStart : MonoBehaviour
             rng.InitializeSeed(UnityEngine.Random.Range(int.MinValue, int.MaxValue));
             player.SetMaxHealth(60);
             player.SetCurrentHealth(60);
+            player.SetShield(0);
         }
         MovingObjects.instance.mo["GameplayMenu"].TeleportTo("OffScreen");
         MovingObjects.instance.mo["GameplayMenu"].StartMove("OnScreen");
@@ -49,6 +52,8 @@ public class GameplayStart : MonoBehaviour
         MovingObjects.instance.mo["DrawPile"].TeleportTo("OffScreen");
         MovingObjects.instance.mo["DiscardPile"].TeleportTo("OffScreen");
         MovingObjects.instance.mo["EndTurnButtonBackdrop"].TeleportTo("OffScreen");
+        MovingObjects.instance.mo["PlayerStatsBackdrop"].TeleportTo("OffScreen");
+        MovingObjects.instance.mo["EndCombatButtonBackdrop"].TeleportTo("OffScreen");
         r.i.persistantCanvas.worldCamera = GameManager.instance.gameplayCamera;
         StartCoroutine(WaitAndStart());
     }

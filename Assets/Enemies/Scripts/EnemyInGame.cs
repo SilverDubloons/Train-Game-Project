@@ -35,12 +35,16 @@ public class EnemyInGame : MonoBehaviour
     bool executingAction = false;
     public void SetupEnemyInGame(Enemy enemy)
     {
+        SetVisibility(true);
         baseEnemy = enemy;
         name = enemy.enemyName;
         enemyTag = enemy.enemyTag;
         enemyName = enemy.enemyName;
         maxHealth = enemy.maxHealth;
         currentHealth = maxHealth;
+        executingTurn = false;
+        executingAction = false;
+        intents.Clear();
         UpdateHealthbar();
         currentLimbInGames.Clear();
         for (int i = 0; i < enemy.limbs.Length; i++)
@@ -139,22 +143,26 @@ public class EnemyInGame : MonoBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            for (int i = 0; i < intents.Count; i++)
-            {
-                switch (intents[i].GetIntentType())
-                {
-                    case IntentType.Attack:
-                        EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[i];
-                        for (int j = 0; j < enemyIntentAttack.affectedColumns.Length; j++)
-                        {
-                            CombatArea.instance.RemoveEnemyIntent(currentCombatSpace.gridPosition.x, enemyIntentAttack.affectedColumns[j], enemyIntentAttack);
-                        }
-                    break;
-                }
-            }
+            RemoveAlIntents();
             CombatManager.instance.EnemyDefeated(this);
         }
         UpdateHealthbar();
+    }
+    public void RemoveAlIntents()
+    {
+        for (int i = 0; i < intents.Count; i++)
+        {
+            switch (intents[i].GetIntentType())
+            {
+                case IntentType.Attack:
+                    EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[i];
+                    for (int j = 0; j < enemyIntentAttack.affectedColumns.Length; j++)
+                    {
+                        CombatArea.instance.RemoveEnemyIntent(currentCombatSpace.gridPosition.x, enemyIntentAttack.affectedColumns[j], enemyIntentAttack);
+                    }
+                break;
+            }
+        }
     }
     public void UpdateHealthbar()
     {

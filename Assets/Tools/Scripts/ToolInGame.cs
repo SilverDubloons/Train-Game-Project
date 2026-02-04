@@ -71,8 +71,15 @@ public class ToolInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if (isUsable)
         {
-            bool aiming = HasSpecialTag(ToolSpecialTag.AlwaysAim);
-            CombatManager.instance.SetTargetingTool(this, aiming);
+            if (toolTargetStyle == ToolTargetStyle.Self)
+            {
+                CombatManager.instance.ApplySelfTool(this);
+            }
+            else
+            {
+                bool aiming = HasSpecialTag(ToolSpecialTag.AlwaysAim);
+                CombatManager.instance.SetTargetingTool(this, aiming);
+            }
         }
     }
     public void OnPointerEnter(PointerEventData pointerEventData)
@@ -91,6 +98,10 @@ public class ToolInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             return;
         }
+        if (toolTargetStyle == ToolTargetStyle.Self)
+        {
+            return;
+        }
         bool aiming = HasSpecialTag(ToolSpecialTag.AlwaysAim);
         CombatArea.instance.PreviewSelectableTargets(toolTargetStyle, adjacentColumnsTarget, aiming);
     }
@@ -101,6 +112,10 @@ public class ToolInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             return;
         }
         CombatArea.instance.EndTargetPreview();
+    }
+    public int GetImpact()
+    {
+        return damage;
     }
     public int GetDamage(CombatSpace affectedSpace, EnemyInGame affectedEnemy, bool aiming = false, LimbInGame targetedLimb = null)
     {
@@ -190,3 +205,7 @@ public class ToolInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         Tooltip.instance.SetupTooltip(position, alignment, tooltipDatas);
     }
 }
+/*
+    Current available tools:
+    One pair, two card straight, two card flush, three of a kind, two pair
+ */

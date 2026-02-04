@@ -268,11 +268,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d72ecba5ec2df2143a62c25fcb038778, type: 2}
   - {fileID: 11400000, guid: 3da72774323b25e4794320cddd86753b, type: 2}
   - {fileID: 11400000, guid: 6ee8c86ead21a3445aafce2d9261a3ef, type: 2}
+  - {fileID: 11400000, guid: 65ace2e5c41bc8e49a375db50d67a3d4, type: 2}
+  - {fileID: 11400000, guid: 76b998821dbc231498d4438107342c31, type: 2}
   tools:
   - {fileID: 11400000, guid: 9d2f8e63ac3f567489b8a3898ee13d17, type: 2}
   - {fileID: 11400000, guid: 9d23be749d3fedd4b89846d2c6c3ddee, type: 2}
   - {fileID: 11400000, guid: 2bd32463f9b485240b60f249a4cc66d9, type: 2}
   - {fileID: 11400000, guid: a6f1a39bc5d485544a2e55707f46c608, type: 2}
+  - {fileID: 11400000, guid: 29b76cdb64cc02f46b1d190f7658e0f0, type: 2}
   limbInGamePrefab: {fileID: 5592692271391516140, guid: 5c3cbc7e2aab06042969773729e3696c, type: 3}
   enemyInGamePrefab: {fileID: 3104707074184538744, guid: 03ffc6c593d2d5b4fba8a7ce6966bbdc, type: 3}
   cardPrefab: {fileID: 3556725916596399084, guid: 2479637815a2aed4c8d0bfeeb1c82566, type: 3}
@@ -746,6 +749,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 009dd7cec672f2141af647118643511a, type: 3}
   - {fileID: 8300000, guid: ae695dcf6c5d6834d9ed00fd36e84d1e, type: 3}
   - {fileID: 8300000, guid: f3d4034694537fe4ebcdd928915fec50, type: 3}
+  shuffleSounds:
+  - {fileID: 8300000, guid: 27de46f396e0e3c428492c576d76b7b7, type: 3}
+  - {fileID: 8300000, guid: 232c0bc500da0cb40b225e5570d23b49, type: 3}
+  - {fileID: 8300000, guid: 6eafd6708aeb8fe458b1e25b782639d9, type: 3}
+  - {fileID: 8300000, guid: 6a7caa9ed8b887f4f8156f6681acfde0, type: 3}
+  - {fileID: 8300000, guid: 392a8b5729591824c9cd489385403c0b, type: 3}
+  - {fileID: 8300000, guid: 57c2a951cb53c9b4995e1df49917cae5, type: 3}
   audioSouce: {fileID: 354131897}
   tickSource: {fileID: 354131899}
 --- !u!82 &354131899

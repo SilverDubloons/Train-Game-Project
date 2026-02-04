@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31f93195e6359904ca4f62b3c13d1b2e, type: 3}
-  m_Name: MixedCrew
+  m_Name: MixedCrew_2
   m_EditorClassIdentifier: Assembly-CSharp::Encounter
   encounterName: Mixed Crew
-  encounterTag: MixedCrew
+  encounterTag: MixedCrew_2
   encounterDescription: WHOA
   enemies:
   - {fileID: 11400000, guid: 5eb308fbdb1b4724d9bdf5dc6b7a86ba, type: 2}

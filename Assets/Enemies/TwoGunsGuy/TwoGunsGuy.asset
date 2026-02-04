@@ -65,6 +65,6 @@ MonoBehaviour:
   abilities:
   - {fileID: 11400000, guid: 47a4ca5c1cc1b49458c7ae7ad215fe31, type: 2}
   - {fileID: 11400000, guid: fa59ddc4cc242d4489f73415122fb940, type: 2}
-  behavior: {fileID: 11400000, guid: c83ebc4f636a3f744b4cec7017bbd0f6, type: 2}
+  behavior: {fileID: 11400000, guid: 38c0ef4b0962a034ab80b8fad0135e86, type: 2}
   canMoveDiagonally: 0
   prefersColumnForMovement: 1

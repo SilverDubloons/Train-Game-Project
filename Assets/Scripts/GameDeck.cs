@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class GameDeck : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class GameDeck : MonoBehaviour
     [SerializeField] private Label drawPileCountLabel;
     [SerializeField] private UnityEngine.UI.Image discardPileCardBackImage;
     [SerializeField] private Label discardPileCountLabel;
-    [SerializeField] private Vector2 discardPileLocation;
+    public Vector2 discardPileLocation;
     [SerializeField] private RectTransform discardingCardsParent;
     private List<CardData> drawPile = new List<CardData>();
     private List<Card> cardsInHand = new List<Card>();
@@ -18,7 +19,8 @@ public class GameDeck : MonoBehaviour
     private List<Card> cardsReturningToDrawPile = new List<Card>();
     private Card topDeckCard = null;
     public RectTransform spareCardsParent;
-
+    public bool shufflingDiscardPileIntoDrawPile = false;
+    private IEnumerator shufflingDiscardPileIntoDrawPileCoroutine = null;
     public static GameDeck instance;
     public void SetupInstance()
     { 
@@ -80,7 +82,9 @@ public class GameDeck : MonoBehaviour
     {
         if (spareCardsParent.childCount > 0)
         {
-            return spareCardsParent.GetChild(spareCardsParent.childCount - 1).GetComponent<Card>();
+            Card card = spareCardsParent.GetChild(spareCardsParent.childCount - 1).GetComponent<Card>();
+            card.SetVisibility(true);
+            return card;
         }
         else
         {
@@ -122,9 +126,11 @@ public class GameDeck : MonoBehaviour
         discardPile.Add(cardToDiscard);
         DiscardPileUpdated();
     }
-    public void AddCardToDrawPile(CardData cardToAdd)
+    public void AddCardToDrawPile(Card cardBeingAdded)
     {
-        drawPile.Add(cardToAdd);
+        cardsReturningToDrawPile.Remove(cardBeingAdded);
+        drawPile.Add(cardBeingAdded.cardData);
+        DrawPileUpdated();
     }
     public void DrawPileUpdated()
     {
@@ -150,5 +156,55 @@ public class GameDeck : MonoBehaviour
         card.SetParent(discardingCardsParent);
         cardsBeingDiscarded.Add(card);
         card.StartMove(discardPileLocation, new Vector3(0, 0, 0), false, true, true, false);
+    }
+    public void ReturnCardToDrawPile(Card card)
+    {
+        cardsInHand.Remove(card);
+        card.SetParent(discardingCardsParent);
+        cardsReturningToDrawPile.Add(card);
+        card.StartMove(HandArea.instance.drawPileLocation, Vector3.zero, false, true, false, true);
+    }
+    public void StartShuffleDiscardPileIntoDrawPile()
+    {
+        if (discardPile.Count <= 0)
+        {
+            return;
+        }
+        if (shufflingDiscardPileIntoDrawPile)
+        {
+            StopCoroutine(shufflingDiscardPileIntoDrawPileCoroutine);
+        }
+        shufflingDiscardPileIntoDrawPileCoroutine = ShuffleDiscardPileIntoDrawPile();
+        StartCoroutine(shufflingDiscardPileIntoDrawPileCoroutine);
+    }
+    private IEnumerator ShuffleDiscardPileIntoDrawPile()
+    {
+        shufflingDiscardPileIntoDrawPile = true;
+        float timeBetweenCards = 1f / discardPile.Count;
+        SoundManager.instance.PlayShuffleSound();
+        while (discardPile.Count > 0)
+        {
+            Logger.instance.Log($"discardPile.Count:{discardPile.Count}");
+            Card card = GetNewCard();
+            card.rt.SetParent(discardingCardsParent);
+            card.SetFaceUp(false);
+            card.UpdateCardData(discardPile[discardPile.Count - 1]);
+            cardsBeingDiscarded.Add(card);
+            discardPile.RemoveAt(discardPile.Count - 1);
+            card.rt.anchoredPosition = discardPileLocation;
+            card.StartMove(HandArea.instance.drawPileLocation, Vector3.zero, false, true, false, true);
+            DiscardPileUpdated();
+            float t = 0;
+            while (t < timeBetweenCards && discardPile.Count > 0)
+            {                
+                t = Mathf.Clamp(t + Time.deltaTime, 0, timeBetweenCards);
+                yield return null;
+            }
+        }
+        shufflingDiscardPileIntoDrawPile = false;
+    }
+    public int GetNumberOfCardsInDrawPile()
+    {
+        return drawPile.Count;
     }
 }

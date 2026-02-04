@@ -7,6 +7,7 @@ public class Files : MonoBehaviour
 	private string localFilesDirectory;
 	[DllImport("__Internal")]
     private static extern void JS_FileSystem_Sync();
+	public string gameName;
 	
 	public static Files instance;
 	

@@ -1,8 +1,5 @@
-using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using UnityEditor.Build;
 [CreateAssetMenu(fileName = "EnemyAbilityAttack", menuName = "Combat/EnemyAbilities/Enemy Ability Attack")]
 public class EnemyAbilityAttack : EnemyAbility
 {
@@ -14,7 +11,11 @@ public class EnemyAbilityAttack : EnemyAbility
     {
         List<CombatSpace> targetableSpaces = new List<CombatSpace>();
         // AttackAvailabilityData attackAvailabilityData = new AttackAvailabilityData(false, false, targetableSpaces);
-        AttackAvailabilityData attackAvailabilityData = new AttackAvailabilityData(false, false);
+        AttackAvailabilityData attackAvailabilityData = new AttackAvailabilityData(false, false, false);
+        if (enemy.EnemyMeetsLimbRequirements(limbRequirements))
+        {
+            attackAvailabilityData.limbRequirementsMet = true;
+        }
         CombatSpace currentCombatSpace = enemy.GetCurrentCombatSpace();
         if ((currentCombatSpace.gridPosition.y == 1 && !canBeUsedFromFrontRow) ||
            (currentCombatSpace.gridPosition.y == 2 && !canBeUsedFromBackRow))
@@ -39,7 +40,7 @@ public class EnemyAbilityAttack : EnemyAbility
         {
             return attackAvailabilityData;
         }
-        if (!enemy.EnemyMeetsLimbRequirements(limbRequirements))
+        if (!attackAvailabilityData.limbRequirementsMet)
         {
             return attackAvailabilityData;
         }
@@ -404,12 +405,14 @@ public struct AttackAvailabilityData
 { 
     public bool isAvailable;
     public bool playerInRange;
+    public bool limbRequirementsMet;
     // public List<CombatSpace> targetableSpaces;
     // public AttackAvailabilityData(bool isAvailable, bool playerInRange, List<CombatSpace> targetableSpaces)
-    public AttackAvailabilityData(bool isAvailable, bool playerInRange)
+    public AttackAvailabilityData(bool isAvailable, bool playerInRange, bool limbRequirementsMet)
     {
         this.isAvailable = isAvailable;
         this.playerInRange = playerInRange;
+        this.limbRequirementsMet = limbRequirementsMet;
         // this.targetableSpaces = targetableSpaces;
     }
 }

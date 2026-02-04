@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   enemyTag: Jackrabbit
   enemyName: Jackrabbit
-  maxHealth: 10
+  maxHealth: 18
   limbs:
   - limbName: Torso
     size: {x: 70, y: 53.5}

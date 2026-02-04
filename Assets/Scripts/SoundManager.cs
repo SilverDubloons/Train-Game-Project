@@ -10,6 +10,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip[] cardDropSounds;
     [SerializeField] private AudioClip[] cardSlideSounds;
     [SerializeField] private AudioClip[] chipSounds;
+    [SerializeField] private AudioClip[] shuffleSounds;
 
     [SerializeField] private AudioSource audioSouce;
     [SerializeField] private AudioSource tickSource;
@@ -114,5 +115,9 @@ public class SoundManager : MonoBehaviour
     public void PlayCardSlideSound()
     {
         PlaySound(cardSlideSounds, 0.5f, "cardSlide", randomize: true);
+    }
+    public void PlayShuffleSound()
+    {
+        PlaySound(shuffleSounds, 0.5f, "cardSlide", randomize: true);
     }
 }

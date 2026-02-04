@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Card : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField] private RectTransform rt;
+    public RectTransform rt;
     [SerializeField] private GameObject selectionGlow;
     [SerializeField] private Image rankImage;
     [SerializeField] private RectTransform rankImageRT;
@@ -132,7 +132,8 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
         if (addToDrawPileAtEnd)
         {
-            GameDeck.instance.AddCardToDrawPile(this.cardData);
+            // Logger.instance.Log($"{name} addToDrawPileAtEnd");
+            GameDeck.instance.AddCardToDrawPile(this);
         }
         if (destroyAtEnd)
         {
@@ -265,6 +266,13 @@ public class Card : MonoBehaviour, IPointerClickHandler
         selectionGlow.gameObject.SetActive(false);
         StartFlip();
         GameDeck.instance.StartDiscardCard(this);
+    }
+    public void ReturnCardToDrawPile()
+    {
+        SetInteractability(false);
+        selectionGlow.gameObject.SetActive(false);
+        StartFlip();
+        GameDeck.instance.ReturnCardToDrawPile(this);
     }
     public void SetFaceUp(bool newFaceUp)
     {

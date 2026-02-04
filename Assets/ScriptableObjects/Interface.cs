@@ -271,4 +271,23 @@ public class Interface : ScriptableObject
             _ => new Vector2Int(0, 0),
         };
     }
+    public string ConvertAffectedColumnsToString(int[] affectedColumns)
+    {
+        if (affectedColumns.Length == 1)
+        {
+            if (affectedColumns[0] == 0)
+            {
+                return "Same Column";
+            }
+            else if (affectedColumns[0] == -1)
+            {
+                return "Column to the Left";
+            }
+            else if (affectedColumns[0] == 1)
+            {
+                return "Column to the Right";
+            }
+        }
+        return "Unknown affected Columns";
+    }
 }

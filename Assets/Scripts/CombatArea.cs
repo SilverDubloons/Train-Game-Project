@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using System.Diagnostics;
 
 public class CombatArea : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class CombatArea : MonoBehaviour
     }
     public void SetInteractability(bool interactable)
     {
-        // startCombatButton.SetButtonEnabled(interactable);
+        
     }
     public void SetVisibility(bool visible)
     {
@@ -143,7 +144,7 @@ public class CombatArea : MonoBehaviour
     }
     public void EndTargetPreview()
     {
-        Logger.instance.Log("Ending target preview");
+        // Logger.instance.Log("Ending target preview");
         for (int x = 0; x < currentCombatSpaces.GetLength(0); x++)
         {
             for (int y = 1; y < currentCombatSpaces.GetLength(1); y++)
@@ -199,6 +200,7 @@ public class CombatArea : MonoBehaviour
     public void CombatAreaFinishedMovingOnScreen()
     {
         CombatManager.instance.SetAllEnemiesToLooseParent();
+        GameplayMenu.instance.SetEndCombatButtonEnabled(true);
     }
     public void ResetEnemiesTargeting()
     {
@@ -231,5 +233,86 @@ public class CombatArea : MonoBehaviour
             return;
         }
         currentCombatSpaces[targetedSpace.x, targetedSpace.y].RemoveEnemyIntentAtack(enemyIntentAttack);
+    }
+}
+
+public struct EMD // enemy movement data
+{
+    public CombatSpace playerSpace;
+    public CombatSpace enemySpace;
+    public int enemyColumn;
+    public int enemyRow;
+    public bool enemyOnLeftHalfOfBoard;
+    public bool enemyOnRightHalfOfBoard;
+    public bool enemyOnLeftEdgeOfBoard;
+    public bool enemyOnRightEdgeOfBoard;
+    public bool enemyInFrontRow;
+    public bool enemyInBackRow;
+    public int playerColumn;
+    public bool inSameColumnAsPlayer;
+    public bool playerIsToTheLeft;
+    public bool playerIsToTheRight;
+    public bool playerOnLeftHalfOfBoard;
+    public bool playerOnRightHalfOfBoard;
+    public bool playerOnLeftEdgeOfBoard;
+    public bool playerOnRightEdgeOfBoard;
+    public RLD spaceUp;
+    public RLD spaceUpRight;
+    public RLD spaceRight;
+    public RLD spaceDownRight;
+    public RLD spaceDown;
+    public RLD spaceDownLeft;
+    public RLD spaceLeft;
+    public RLD spaceUpLeft;
+    public EMD(CombatSpace playerSpace, CombatSpace enemySpace) // enemy movement data
+    { 
+        this.playerSpace = playerSpace;
+        this.enemySpace = enemySpace;
+        enemyColumn = enemySpace.gridPosition.x;
+        enemyRow = enemySpace.gridPosition.y;
+        enemyOnLeftHalfOfBoard = enemyColumn < CombatArea.instance.currentBoardSize.x / 2;
+        enemyOnRightHalfOfBoard = !enemyOnLeftHalfOfBoard;
+        enemyOnLeftEdgeOfBoard = enemyColumn == 0;
+        enemyOnRightEdgeOfBoard = enemyColumn == CombatArea.instance.currentBoardSize.x - 1;
+        enemyInFrontRow = enemyRow == 1;
+        enemyInBackRow = enemyRow == CombatArea.instance.currentBoardSize.y - 1;
+        playerColumn = playerSpace.gridPosition.x;
+        inSameColumnAsPlayer = enemyColumn == playerColumn;
+        playerIsToTheLeft = playerColumn < enemyColumn;
+        playerIsToTheRight = playerColumn > enemyColumn;
+        playerOnLeftHalfOfBoard = playerColumn < CombatArea.instance.currentBoardSize.x / 2;
+        playerOnRightHalfOfBoard = !playerOnLeftHalfOfBoard;
+        playerOnLeftEdgeOfBoard = playerColumn == 0;
+        playerOnRightEdgeOfBoard = playerColumn == CombatArea.instance.currentBoardSize.x - 1;
+        spaceUp = new RLD(new Vector2Int(enemyColumn, enemyRow + 1));
+        spaceUpRight = new RLD(new Vector2Int(enemyColumn + 1, enemyRow + 1));
+        spaceRight = new RLD(new Vector2Int(enemyColumn + 1, enemyRow));
+        spaceDownRight = new RLD(new Vector2Int(enemyColumn + 1, enemyRow - 1));
+        spaceDown = new RLD(new Vector2Int(enemyColumn, enemyRow - 1));
+        spaceDownLeft = new RLD(new Vector2Int(enemyColumn - 1, enemyRow - 1));
+        spaceLeft = new RLD(new Vector2Int(enemyColumn - 1, enemyRow));
+        spaceUpLeft = new RLD(new Vector2Int(enemyColumn - 1, enemyRow + 1));
+    }
+}
+public struct RLD // Relative Location Data
+{
+    public Vector2Int actualCoordinates;
+    public bool spaceExists;
+    public CombatSpace combatSpace;
+    public bool enemyInSpace;
+    public RLD(Vector2Int actualCoordinates)
+    { 
+        this.actualCoordinates = actualCoordinates;
+        spaceExists = CombatArea.instance.IsPositionInCombatArea(actualCoordinates);
+        if (spaceExists)
+        {
+            combatSpace = CombatArea.instance.GetCombatSpaceAtPosition(actualCoordinates);
+            enemyInSpace = combatSpace.EnemyInSpace();
+        }
+        else
+        {
+            combatSpace = null;
+            enemyInSpace = false;
+        }
     }
 }

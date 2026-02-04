@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class CombatManager : MonoBehaviour
 {
-    private List<EnemyInGame> enemiesInGame = new List<EnemyInGame>();
+    // private List<EnemyInGame> enemiesInGame = new List<EnemyInGame>();
     public List<EnemyInGame> currentEnemiesInGame = new List<EnemyInGame>();
     public static CombatManager instance;
     public bool inCombat = false;
@@ -17,6 +17,7 @@ public class CombatManager : MonoBehaviour
     private LimbInGame currentLimbMouseOver = null;
     [SerializeField] private ButtonPlus endTurnButton;
     [SerializeField] private RectTransform spareEnemyIntentUIParent;
+    [SerializeField] private RectTransform spareEnemyInGameParent;
     [SerializeField] private GameObject enemyIntentUIPrefab;
     public void SetupInstance()
     {
@@ -27,6 +28,14 @@ public class CombatManager : MonoBehaviour
     {
         endTurnButton.SetButtonEnabled(canEndTurn);
     }
+    public EnemyInGame GetEnemyInGame()
+    {
+        if (spareEnemyInGameParent.childCount > 0)
+        { 
+            return spareEnemyInGameParent.GetChild(spareEnemyInGameParent.childCount - 1).GetComponent<EnemyInGame>();
+        }
+        return Instantiate(r.i.enemyInGamePrefab).GetComponent<EnemyInGame>();
+    }
     public void SetupCombat(Encounter encounter)
     {
         SetCanEndTurn(false);
@@ -35,23 +44,10 @@ public class CombatManager : MonoBehaviour
         CombatArea.instance.SetupBoard(encounter.boardSize);
         for (int i = 0; i < encounter.enemies.Length; i++)
         {
-            EnemyInGame newEnemyInGame;
-            if (enemiesInGame.Count > i)
-            {
-                newEnemyInGame = enemiesInGame[i];
-            }
-            else
-            {
-                newEnemyInGame = Instantiate(r.i.enemyInGamePrefab).GetComponent<EnemyInGame>();
-                enemiesInGame.Add(newEnemyInGame);
-            }
+            EnemyInGame newEnemyInGame = GetEnemyInGame();
             newEnemyInGame.SetupEnemyInGame(encounter.enemies[i]);
-            CombatManager.instance.currentEnemiesInGame.Add(newEnemyInGame);
+            currentEnemiesInGame.Add(newEnemyInGame);
             CombatArea.instance.GetSpawnSpaceForEnemy(encounter.enemies[i]).PlaceEnemyInSpace(newEnemyInGame, true, true);
-        }
-        for (int i = encounter.enemies.Length; i < enemiesInGame.Count; i++)
-        {
-            enemiesInGame[i].gameObject.SetActive(false);
         }
         HandArea.instance.StartDrawCards(true);
         CombatArea.instance.SetPlayerPosition(new Vector2Int(RNG.instance.combat.Range(0, encounter.boardSize.x), 0));
@@ -74,7 +70,7 @@ public class CombatManager : MonoBehaviour
             Vector2Int bPos = b.GetCurrentCombatSpace().gridPosition;
             if (aPos.y != bPos.y)
             { 
-                return aPos.y.CompareTo(bPos.y);
+                return bPos.y.CompareTo(aPos.y);
             }
             return aPos.x.CompareTo(bPos.x);
         });
@@ -93,6 +89,7 @@ public class CombatManager : MonoBehaviour
         Logger.instance.Log("Enemy turn finished");
         DetermineEnemyIntents();
         HandArea.instance.StartDrawCards();
+        Player.instance.SetShield(0);
     }
     public void SetTargetingTool(ToolInGame newTargetingTool, bool toolIsAiming)
     {
@@ -140,6 +137,16 @@ public class CombatManager : MonoBehaviour
             }
             yield return null;
         }
+    }
+    public void ApplySelfTool(ToolInGame toolInGame)
+    {
+        switch (toolInGame.baseTool.toolTag)
+        {
+            case "Shield":
+                Player.instance.AddShield(toolInGame.GetImpact());
+            break;
+        }
+        HandArea.instance.HandPlayed();
     }
     public bool IsTargetingWithTool(ToolInGame tool)
     {
@@ -290,7 +297,8 @@ public class CombatManager : MonoBehaviour
     { 
         defeatedEnemy.GetCurrentCombatSpace().RemoveEnemyFromSpace();
         currentEnemiesInGame.Remove(defeatedEnemy);
-        enemiesInGame.Add(defeatedEnemy);
+        defeatedEnemy.SetParent(spareEnemyInGameParent);
+        // enemiesInGame.Add(defeatedEnemy);
         defeatedEnemy.SetVisibility(false);
     }
     public void ClickEndTurn()
@@ -303,7 +311,7 @@ public class CombatManager : MonoBehaviour
     {
         for (int i = 0; i < currentEnemiesInGame.Count; i++)
         {
-            enemiesInGame[i].SetParent(CombatArea.instance.looseCharactersParent);
+            currentEnemiesInGame[i].SetParent(CombatArea.instance.looseCharactersParent);
         }
     }
     public EnemyIntentUI GetEnemyIntentUI()
@@ -318,5 +326,24 @@ public class CombatManager : MonoBehaviour
     {
         enemyIntentUI.rt.SetParent(spareEnemyIntentUIParent);
         enemyIntentUI.SetVisibility(false);
+    }
+    public void CleanupCombat()
+    {
+        for (int i = currentEnemiesInGame.Count - 1; i >= 0; i--)
+        {
+            currentEnemiesInGame[i].RemoveAlIntents();
+            EnemyDefeated(currentEnemiesInGame[i]);
+        }
+        currentEnemiesInGame.Clear();
+        targetingTool = null;
+        targeting = false;
+        aiming = false;
+        SetCanEndTurn(false);
+        TargetingArrows.instance.SetVisibility(false);
+        currentLimbMouseOver = null;
+        inCombat = false;
+        CombatArea.instance.EndTargetPreview();
+        CombatArea.instance.SetMovableSpaces(null);
+        CombatArea.instance.ResetEnemiesTargeting();
     }
 }

@@ -8,6 +8,7 @@ public class Label : MonoBehaviour
 	public enum FontSize {small, large}
     
     [SerializeField] private FontSize fontSize = FontSize.small;
+    [SerializeField] private GameObject visibilityObject;
 	
 	public RectTransform rt;
     public TMP_Text labelShadow;
@@ -33,7 +34,10 @@ public class Label : MonoBehaviour
 		ApplyFontSize();
 		#endif
 	}
-	
+	public void SetVisibility(bool visible)
+	{ 
+		visibilityObject.SetActive(visible);
+	}
 	public void ApplyFontSize()
 	{
 		switch(fontSize)
