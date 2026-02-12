@@ -18,8 +18,8 @@ MonoBehaviour:
   toolIcon: {fileID: 1818496280, guid: c52fa710d48bce3448863d22c4ff8614, type: 3}
   handStyle: 3
   cardsRequired: 3
-  toolTargetStyle: 1
+  toolTargetStyle: 0
   adjacentColumnsTarget: 0
   areaOfEffectRadius: 0
-  damage: 8
-  toolSpecialTags: 0000000002000000
+  damage: 10
+  toolSpecialTags: 00000000

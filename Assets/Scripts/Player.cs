@@ -3,34 +3,40 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private RectTransform rt;
+    public RectTransform rt;
     [SerializeField] private Image combatImage;
     [SerializeField] private Label healthLabel;
     [SerializeField] private Image healthImage;
     [SerializeField] private Label shieldLabel;
     [SerializeField] private Image shieldImage;
-    private CombatSpace currentSpace;
+    [SerializeField] private Label currencyLabel;
     private int maxHealth;
     private int currentHealth;
     private int currentShield;
+    public int currency;
     public static Player instance;
     public void SetupInstance()
     {
         instance = this;
     }
-    public void SetPlayerPosition(CombatSpace space)
-    {
-        currentSpace = space;
-        space.PlacePlayerInSpace(this);
+    public void SetCurrency(int newCurrencyValue)
+    { 
+        currency = newCurrencyValue;
+        UpdateCurrencyInterface();
     }
-    public void SetParent(RectTransform newParent, CombatSpace space)
+    public void AddCurrency(int currencyToAdd)
+    {
+        currency += currencyToAdd;
+        UpdateCurrencyInterface();
+    }
+    public void SubtractCurrency(int currencyToSubtract)
+    {
+        currency -= currencyToSubtract;
+        UpdateCurrencyInterface();
+    }
+    public void SetParent(RectTransform newParent)
     {
         rt.SetParent(newParent);
-        rt.anchoredPosition = Vector2.zero;
-    }
-    public CombatSpace GetCurrentSpace()
-    {
-        return currentSpace;
     }
     public void SetMaxHealth(int newMaxHealth)
     {
@@ -77,7 +83,6 @@ public class Player : MonoBehaviour
             }
             UpdateHealthInterface();
         }
-        Logger.instance.Log($"Player took {damage} damage and is now at {currentHealth}/{maxHealth} HP");
     }
     public void UpdateHealthInterface()
     {
@@ -95,5 +100,9 @@ public class Player : MonoBehaviour
             shieldLabel.ChangeText($"{currentShield}");
             shieldImage.gameObject.SetActive(true);
         }
+    }
+    public void UpdateCurrencyInterface()
+    {
+        currencyLabel.ChangeText(currency.ToString());
     }
 }

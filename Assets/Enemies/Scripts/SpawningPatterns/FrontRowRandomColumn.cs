@@ -1,4 +1,4 @@
-using NUnit.Framework;
+/*using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,8 +13,8 @@ public class FrontRowRandomColumn : SpawningPattern
         while (currentY < availableSpaces.GetLength(1))
         {
             List<CombatSpace> rowSpaces = new List<CombatSpace>();
-            /*rowSpaces = availableSpaces.FindAll(space => space.gridPosition.y == currentY);
-            rowSpaces.RemoveAll(space => !space.CanPlaceEnemy());*/
+            *//*rowSpaces = availableSpaces.FindAll(space => space.gridPosition.y == currentY);
+            rowSpaces.RemoveAll(space => !space.CanPlaceEnemy());*//*
             for (int i = 0; i < availableSpaces.GetLength(0); i++)
             {
                 if (availableSpaces[i, currentY].CanPlaceEnemy())
@@ -33,3 +33,4 @@ public class FrontRowRandomColumn : SpawningPattern
         return null;
     }
 }
+*/

@@ -89,15 +89,11 @@ public enum HandType
 }
 public enum ToolTargetStyle
 { 
-    FirstInColumn,
-    LastInColumn,
-    EntireColumn,
-    AnyInColumn,
+    Enemy,
+    AllEnemies,
     Self
 }
 public enum ToolSpecialTag
 { 
-    AlwaysAim,
-    DoubleDamageFrontRow,
-    DoubleDamageBackRow
+    AlwaysAim
 }

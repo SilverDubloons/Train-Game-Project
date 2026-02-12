@@ -184,7 +184,7 @@ public class GameDeck : MonoBehaviour
         SoundManager.instance.PlayShuffleSound();
         while (discardPile.Count > 0)
         {
-            Logger.instance.Log($"discardPile.Count:{discardPile.Count}");
+            // Logger.instance.Log($"discardPile.Count:{discardPile.Count}");
             Card card = GetNewCard();
             card.rt.SetParent(discardingCardsParent);
             card.SetFaceUp(false);

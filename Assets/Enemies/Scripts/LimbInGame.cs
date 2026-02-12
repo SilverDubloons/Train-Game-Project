@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -73,8 +74,18 @@ public class LimbInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            image.color = Color.darkRed;
+            SetHighlightLimb(false);
+            parentEnemyInGame.LimbDestroyed(this);
         }
+    }
+    public void Heal(int healAmount)
+    {
+        currentHealth += healAmount;
+        if (currentHealth > maxHealth)
+        { 
+            currentHealth = maxHealth;
+        }
+        SetHighlightLimb(false);
     }
     public bool IsDestroyed()
     {
@@ -88,6 +99,18 @@ public class LimbInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             {
                 return true;
             }
+        }
+        return false;
+    }
+    public int GetMissingHealth()
+    { 
+        return maxHealth - currentHealth;
+    }
+    public bool LimbCouldFulfilLimbRequirement(LimbRequirement limbRequirement)
+    {
+        if (limbTags.Contains(limbRequirement.limbTag))
+        {
+            return true;
         }
         return false;
     }

@@ -17,6 +17,7 @@ public class Tools : MonoBehaviour
     private List<ToolInGame> playerPlayableTools = new List<ToolInGame>();
     private HandEvaluation handEvaluation;
     public static Tools instance;
+    public Dictionary<HandType, List<Card>> cardsForEachHandType = new Dictionary<HandType, List<Card>>();
     public void SetupInstance()
     {
         instance = this;
@@ -92,7 +93,7 @@ public class Tools : MonoBehaviour
     }
     public void DeterminePlayableTools(List<Card> selectedCards)
     {
-        if (selectedCards.Count <= 0)
+        if (selectedCards == null || selectedCards.Count <= 0)
         {
             MovingObjects.instance.mo["PlayableTools"].StartMove("OffScreen");
             return;
@@ -159,5 +160,202 @@ public class Tools : MonoBehaviour
             }
         }
         return null;
+    }
+    public void DeterminePlayableToolsFromCardsInHand(List<Card> hand)
+    {
+        cardsForEachHandType.Clear();
+        if (hand == null || hand.Count == 0)
+        {
+            // disable interactability for all tools
+            return;
+        }
+        Dictionary<int, List<Card>> cardsByRank = new Dictionary<int, List<Card>>();
+        Dictionary<Suit, List<Card>> cardsBySuit = new Dictionary<Suit, List<Card>>();
+        foreach (Card card in hand)
+        {
+            int rank = card.cardData.rank;
+            Suit suit = card.cardData.suit;
+            if (!cardsByRank.ContainsKey(rank))
+            {
+                cardsByRank[rank] = new List<Card>();
+            }
+            cardsByRank[rank].Add(card);
+            if (!cardsBySuit.ContainsKey(suit))
+            {
+                cardsBySuit[suit] = new List<Card>();
+            }
+            cardsBySuit[suit].Add(card);
+        }
+        // List<KeyValuePair<int, List<Card>>
+        List<KeyValuePair<int, List<Card>>> rankedGroups = cardsByRank.OrderByDescending(kvp => kvp.Value.Count).ThenByDescending(kvp => kvp.Key).ToList();
+        ProcessXOfAKind(rankedGroups, hand.Count);
+        ProcessHouseHands(rankedGroups, hand.Count);
+        ProcessPairHands(rankedGroups, hand.Count);
+        foreach (ToolInGame toolInGame in playerTools)
+        {
+            if (toolInGame.handType == HandType.Straight)
+            {
+                /*StraightDetector straightDetector = new StraightDetector();
+                List<StraightInfo> possibleStraights = straightDetector.FindAllStraights(
+                    hand,
+                    GameManager.instance.GetMaxGapInStraights(),
+                    toolInGame.cardsRequired,
+                    toolInGame.cardsRequired,
+                    GameManager.instance.GetCanStraightsWrap()
+                );
+                if (possibleStraights.Any())
+                {
+                    toolInGame.SetCardsToSelectIfClicked(possibleStraights.First().Cards);
+                }
+                else
+                {
+                    toolInGame.SetCardsToSelectIfClicked(null);
+                }*/
+            }
+            else if (toolInGame.handType == HandType.StraightFlush)
+            {
+
+            }
+            else if (toolInGame.handType == HandType.Flush)
+            {
+
+            }
+            else
+            {
+                if (cardsForEachHandType.ContainsKey(toolInGame.handType))
+                {
+                    toolInGame.SetCardsToSelectIfClicked(cardsForEachHandType[toolInGame.handType]);
+                }
+                else
+                {
+                    toolInGame.SetCardsToSelectIfClicked(null);
+                }
+            }
+        }
+    }
+    private void ProcessXOfAKind(List<KeyValuePair<int, List<Card>>> rankedGroups, int handSize)
+    {
+        if (rankedGroups.Count == 0)
+        {
+            return;
+        }
+
+        var highestGroup = rankedGroups[0];
+        int count = highestGroup.Value.Count;
+        if (handSize >= 7 && count >= 7)
+        {
+            cardsForEachHandType[HandType.SevenOfAKind] = highestGroup.Value.Take(7).ToList();
+        }
+        if (handSize >= 6 && count >= 6)
+        {
+            cardsForEachHandType[HandType.SixOfAKind] = highestGroup.Value.Take(6).ToList();
+        }
+        if (handSize >= 5 && count >= 5)
+        {
+            cardsForEachHandType[HandType.FiveOfAKind] = highestGroup.Value.Take(5).ToList();
+        }
+        if (handSize >= 4 && count >= 4)
+        {
+            cardsForEachHandType[HandType.FourOfAKind] = highestGroup.Value.Take(4).ToList();
+        }
+        if (handSize >= 3 && count >= 3)
+        {
+            cardsForEachHandType[HandType.ThreeOfAKind] = highestGroup.Value.Take(3).ToList();
+        }
+    }
+
+    private void ProcessHouseHands(List<KeyValuePair<int, List<Card>>> rankedGroups, int handSize)
+    {
+        if (rankedGroups.Count < 2)
+        {
+            return;
+        }
+        var first = rankedGroups[0];
+        var second = rankedGroups[1];
+        if (handSize >= 7 && first.Value.Count >= 5 && second.Value.Count >= 2)
+        {
+            var cards = new List<Card>();
+            cards.AddRange(first.Value.Take(5));
+            cards.AddRange(second.Value.Take(2));
+            cardsForEachHandType[HandType.HugeHouse] = cards;
+        }
+        if (handSize >= 7 && first.Value.Count >= 4 && second.Value.Count >= 3)
+        {
+            var cards = new List<Card>();
+            cards.AddRange(first.Value.Take(4));
+            cards.AddRange(second.Value.Take(3));
+            cardsForEachHandType[HandType.WideHouse] = cards;
+        }
+        if (handSize >= 6 && first.Value.Count >= 4 && second.Value.Count >= 2)
+        {
+            var cards = new List<Card>();
+            cards.AddRange(first.Value.Take(4));
+            cards.AddRange(second.Value.Take(2));
+            cardsForEachHandType[HandType.StuffedHouse] = cards;
+        }
+        if (handSize >= 6 && first.Value.Count >= 3 && second.Value.Count >= 3)
+        {
+            var cards = new List<Card>();
+            cards.AddRange(first.Value.Take(3));
+            cards.AddRange(second.Value.Take(3));
+            cardsForEachHandType[HandType.DoubleTriple] = cards;
+        }
+        if (handSize >= 5 && first.Value.Count >= 3 && second.Value.Count >= 2)
+        {
+            var cards = new List<Card>();
+            cards.AddRange(first.Value.Take(3));
+            cards.AddRange(second.Value.Take(2));
+            cardsForEachHandType[HandType.FullHouse] = cards;
+        }
+    }
+
+    private void ProcessPairHands(List<KeyValuePair<int, List<Card>>> rankedGroups, int handSize)
+    {
+        if (handSize >= 7 && rankedGroups.Count >= 3)
+        {
+            var first = rankedGroups[0];
+            var second = rankedGroups[1];
+            var third = rankedGroups[2];
+            if (first.Value.Count >= 3 && second.Value.Count >= 2 && third.Value.Count >= 2)
+            {
+                var cards = new List<Card>();
+                cards.AddRange(first.Value.Take(3));
+                cards.AddRange(second.Value.Take(2));
+                cards.AddRange(third.Value.Take(2));
+                cardsForEachHandType[HandType.GuestHouse] = cards;
+            }
+        }
+        if (handSize >= 6 && rankedGroups.Count >= 3)
+        {
+            var first = rankedGroups[0];
+            var second = rankedGroups[1];
+            var third = rankedGroups[2];
+
+            if (first.Value.Count >= 2 && second.Value.Count >= 2 && third.Value.Count >= 2)
+            {
+                var cards = new List<Card>();
+                cards.AddRange(first.Value.Take(2));
+                cards.AddRange(second.Value.Take(2));
+                cards.AddRange(third.Value.Take(2));
+                cardsForEachHandType[HandType.TripleDouble] = cards;
+            }
+        }
+        if (handSize >= 4 && rankedGroups.Count >= 2)
+        {
+            var first = rankedGroups[0];
+            var second = rankedGroups[1];
+
+            if (first.Value.Count >= 2 && second.Value.Count >= 2)
+            {
+                var cards = new List<Card>();
+                cards.AddRange(first.Value.Take(2));
+                cards.AddRange(second.Value.Take(2));
+                cardsForEachHandType[HandType.TwoPair] = cards;
+            }
+        }
+        if (handSize >= 2 && rankedGroups[0].Value.Count >= 2)
+        {
+            cardsForEachHandType[HandType.OnePair] = rankedGroups[0].Value.Take(2).ToList();
+        }
     }
 }

@@ -1,6 +1,8 @@
+using JetBrains.Annotations;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,34 +22,39 @@ public class EnemyInGame : MonoBehaviour
     [SerializeField] private RectTransform statusEffectsUIParentRt;
     [SerializeField] private GameObject statsVisibiltyObject;
     [SerializeField] private Label healthbarLabel;
+    [SerializeField] private GameObject shieldVisibilityObject;
+    [SerializeField] private Label shieldLabel;
+    public StatusEffectsOnCharacter statusEffects;
     private string enemyTag;
     private string enemyName;
     private int maxHealth;
     private int currentHealth;
+    private int currentShield;
     private List<LimbInGame> limbInGames = new List<LimbInGame>();
     private List<LimbInGame> currentLimbInGames = new List<LimbInGame>();
     private Vector2 spriteCenter;
     private Vector2 spriteTotalSize;
-    private CombatSpace currentCombatSpace;
     private Enemy baseEnemy;
     private List<EnemyIntent> intents = new List<EnemyIntent>();
     public bool executingTurn = false;
-    bool executingAction = false;
-    public void SetupEnemyInGame(Enemy enemy)
+    public Dictionary<EnemyAbility, int> turnAbilityWasLastUsed = new Dictionary<EnemyAbility, int>();
+    
+    public void SetupEnemyInGame(EncounterEnemy encounterEnemy)
     {
         SetVisibility(true);
-        baseEnemy = enemy;
-        name = enemy.enemyName;
-        enemyTag = enemy.enemyTag;
-        enemyName = enemy.enemyName;
-        maxHealth = enemy.maxHealth;
+        baseEnemy = encounterEnemy.enemy;
+        name = baseEnemy.enemyName;
+        enemyTag = baseEnemy.enemyTag;
+        enemyName = baseEnemy.enemyName;
+        maxHealth = baseEnemy.maxHealth;
         currentHealth = maxHealth;
+        currentShield = 0;
         executingTurn = false;
-        executingAction = false;
-        intents.Clear();
+        // intents.Clear();
         UpdateHealthbar();
+        UpdateShield();
         currentLimbInGames.Clear();
-        for (int i = 0; i < enemy.limbs.Length; i++)
+        for (int i = 0; i < baseEnemy.limbs.Length; i++)
         {
             LimbInGame newLimbInGame;
             if (limbInGames.Count > i)
@@ -60,44 +67,28 @@ public class EnemyInGame : MonoBehaviour
                 limbInGames.Add(newLimbInGame);
             }
             currentLimbInGames.Add(newLimbInGame);
-            newLimbInGame.SetupFromLimb(enemy.limbs[i], enemy, this);
+            newLimbInGame.SetupFromLimb(baseEnemy.limbs[i], baseEnemy, this);
         }
-        for (int i = enemy.limbs.Length; i < limbInGames.Count; i++)
+        for (int i = baseEnemy.limbs.Length; i < limbInGames.Count; i++)
         {
             limbInGames[i].SetVisibility(false);
         }
-        spriteCenter = enemy.spriteCenter;
-        spriteTotalSize = enemy.totalSize;
-        rt.SetParent(CombatArea.instance.looseCharactersParent);
+        spriteCenter = baseEnemy.spriteCenter;
+        spriteTotalSize = baseEnemy.totalSize;
+        rt.SetParent(CombatManager.instance.enemiesParent);
+        rt.localPosition = encounterEnemy.spawnPosition;
+        turnAbilityWasLastUsed.Clear();
+        for (int i = 0; i < baseEnemy.abilities.Length; i++)
+        {
+            if (baseEnemy.abilities[i].startsOnCooldown)
+            {
+                turnAbilityWasLastUsed[baseEnemy.abilities[i]] = -1;
+            }
+        }
     }
     public void SetVisibility(bool visible)
     {
         visibilityObject.SetActive(visible);
-    }
-    public void SetCurrentCombatSpace(CombatSpace combatSpace, bool firstTimeSetup, RectTransform newParent = null)
-    {
-        if (newParent != null)
-        {
-            // Logger.instance.Log($"Setting parent of {GetBasicInfo()} to {newParent}");
-            rt.SetParent(newParent);
-            rt.anchoredPosition = Vector2.zero;
-        }
-        else
-        {
-            rt.anchoredPosition = r.i.interf.GetCanvasPositionOfRectTransform(combatSpace.GetRectTransform(), GameManager.instance.gameplayCanvas);
-        }
-        if (firstTimeSetup)
-        {
-            float widthScale = r.i.interf.maxEnemySize.x / spriteTotalSize.x;
-            float heightScale = r.i.interf.maxEnemySize.y / spriteTotalSize.y;
-            float scale = Mathf.Min(widthScale, heightScale, 1f);
-            // rt.localScale = new Vector3(scale, scale, 1f);
-            rt.localScale = new Vector3(1f, 1f, 1f);
-            limbsParent.localScale = new Vector3(scale, scale, 1f);
-            // rt.anchoredPosition = new Vector2(-spriteCenter.x * scale, -spriteCenter.y * scale);
-            limbsParent.anchoredPosition = new Vector2(-spriteCenter.x * scale, -spriteCenter.y * scale);
-        }
-        currentCombatSpace = combatSpace;
     }
     public void SetVisibilityOfLimbCrosshairs(bool visible)
     {
@@ -113,17 +104,13 @@ public class EnemyInGame : MonoBehaviour
             currentLimbInGames[i].SetHighlightLimb(highlight);
         }
     }
-    public CombatSpace GetCurrentCombatSpace()
-    {
-        return currentCombatSpace;
-    }
     public string GetEnemyName()
     {
         return enemyName;
     }
     public void ApplyToolEffect(ToolInGame toolInGame, bool aiming = false, LimbInGame targetLimb = null)
     {
-        int damage = toolInGame.GetDamage(currentCombatSpace, this, aiming, targetLimb);
+        int damage = toolInGame.GetDamage(this, aiming, targetLimb);
         if (damage > 0)
         {
             if (aiming && targetLimb != null)
@@ -133,17 +120,73 @@ public class EnemyInGame : MonoBehaviour
             TakeDamage(damage);
         }
     }
-    public void TakeLimbDamage(LimbInGame limb, int damage)
+    public void TakeLimbDamage(LimbInGame limbInGame, int damage)
     {
-        limb.TakeDamage(damage);
+        limbInGame.TakeDamage(damage);
+    }
+    /*public void LimbDestroyed(LimbInGame limbInGame)
+    {
+        bool intentRemoved = false;
+        foreach (EnemyIntent intent in intents)
+        {
+            if (!intent.enemyAbility.GetLimbRequirementsMet(this))
+            {
+                intentRemoved = true;
+                intents.Remove(intent);
+            }
+        }
+        if (intentRemoved)
+        {
+            UpdateIntentsUI();
+        }
+    }*/
+    /*public void LimbDestroyed(LimbInGame limbInGame)
+    {
+        
+        int removedCount = intents.RemoveAll(intent =>
+            !intent.enemyAbility.GetLimbRequirementsMet(this));
+        Logger.instance.Log($"{limbInGame.limbName} of {GetBasicInfo()} destroyed removedCount={removedCount} intents.Count={intents.Count}");
+        if (removedCount > 0)
+        {
+            UpdateIntentsUI();
+        }
+    }*/
+    public void LimbDestroyed(LimbInGame limbInGame)
+    {
+        var intentsToRemove = intents.Where(intent =>
+            !intent.enemyAbility.GetLimbRequirementsMet(this)).ToList();
+        if (intentsToRemove.Count > 0)
+        {
+            foreach (var intent in intentsToRemove)
+            {
+                intent.enemyIntentUI.RetireIntent();
+                intents.Remove(intent);
+            }
+            UpdateIntentsUI();
+        }
     }
     public void TakeDamage(int damage)
     {
+        if (currentShield > 0)
+        {
+            if (currentShield >= damage)
+            {
+                currentShield -= damage;
+                damage = 0;
+            }
+            else
+            {
+                damage -= currentShield;
+                currentShield = 0;
+            }
+            UpdateShield();
+        }
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
             currentHealth = 0;
             RemoveAlIntents();
+            statusEffects.ResetStatusEffects();
             CombatManager.instance.EnemyDefeated(this);
         }
         UpdateHealthbar();
@@ -152,17 +195,56 @@ public class EnemyInGame : MonoBehaviour
     {
         for (int i = 0; i < intents.Count; i++)
         {
-            switch (intents[i].GetIntentType())
+            /*switch (intents[i].GetIntentType())
             {
                 case IntentType.Attack:
                     EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[i];
-                    for (int j = 0; j < enemyIntentAttack.affectedColumns.Length; j++)
-                    {
-                        CombatArea.instance.RemoveEnemyIntent(currentCombatSpace.gridPosition.x, enemyIntentAttack.affectedColumns[j], enemyIntentAttack);
-                    }
                 break;
+            }*/
+            intents[i].enemyIntentUI.RetireIntent();
+        }
+        intents.Clear();
+    }
+    public void UpdateShield()
+    {
+        if (currentShield > 0)
+        {
+            shieldVisibilityObject.SetActive(true);
+            shieldLabel.ChangeText(currentShield.ToString());
+        }
+        else
+        {
+            shieldVisibilityObject.SetActive(false);
+        }
+    }
+    public void AddShield(int shieldToAdd)
+    {
+        currentShield += shieldToAdd;
+        UpdateShield();
+    }
+    public void SetShield(int newShieldValue)
+    { 
+        currentShield = newShieldValue;
+        UpdateShield();
+    }
+    public void UpdateIntentsUI()
+    {
+        float intentUIx = 0;
+        for (int i = 0; i < intents.Count; i++)
+        {
+            EnemyIntentUI enemyIntentUI = intents[i].enemyIntentUI;
+            enemyIntentUI.SetPosition(intentUIx);
+            if (i < intents.Count - 1)
+            {
+                float intentWidth = enemyIntentUI.GetIntentWidth();
+                intentUIx += intentWidth;
             }
         }
+    }
+    public void UpdateStatusEffectsUI()
+    {
+        bool atLeastOneStatusEffect = statusEffects.CharacterHasAtLeastOneStatusEffect();
+        statsParentRt.sizeDelta = new Vector2(statsParentRt.sizeDelta.x, atLeastOneStatusEffect ? 36f : 26f);
     }
     public void UpdateHealthbar()
     {
@@ -170,48 +252,22 @@ public class EnemyInGame : MonoBehaviour
         float percentageHealth = (float)currentHealth / (float)maxHealth;
         healthbarMask.padding = new Vector4(0, 0, healthbarSize * (1f - percentageHealth), 0);
         healthbarLabel.ChangeText($"{currentHealth}/{maxHealth}");
-        statsParentRt.sizeDelta = new Vector2(statsParentRt.sizeDelta.x, 26f);
+        UpdateStatusEffectsUI();
     }
     public void DetermineIntents()
     {
-        intents = baseEnemy.behavior.GetIntents(this, CombatArea.instance.GetCurrentCombatSpaces(), CombatArea.instance.GetPlayerSpace());
+        intents = baseEnemy.behavior.GetIntents(this);
         for (int i = 0; i < intents.Count; i++)
         {
-            EnemyIntentUI enemyIntentUI = CombatManager.instance.GetEnemyIntentUI();
+            EnemyIntentUI enemyIntentUI = EnemyIntents.instance.GetEnemyIntentUI();
+            enemyIntentUI.SetupIntentUI(intents[i], intentsUIParentRt, this);
             intents[i].enemyIntentUI = enemyIntentUI;
-            if (enemyIntentUI == null)
-            {
-                Logger.instance.Log("EnemyIntentUI is null");
-            }
-            if (intents[i] == null)
-            {
-                Logger.instance.Log($"intents[{i}] is null");
-            }
-            enemyIntentUI.SetupIntentUI(intents[i], i, intentsUIParentRt);
-            switch (intents[i].GetIntentType())
-            {
-                case IntentType.Attack:
-                    EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[i];
-                    // Logger.instance.Log($"{GetBasicInfo()} attack intent: {intents[i].intentName}");
-                    for (int j = 0; j < enemyIntentAttack.affectedColumns.Length; j++)
-                    {
-                        CombatArea.instance.HighlightEnemyAttack(currentCombatSpace.gridPosition.x, enemyIntentAttack.affectedColumns[j], enemyIntentAttack);
-                    }
-                    break;
-                case IntentType.Move:
-                    EnemyIntentMove enemyIntentMove = (EnemyIntentMove)intents[i];
-                    // Logger.instance.Log($"{GetBasicInfo()} move intent: {enemyIntentMove.directionToMove}");
-                    break;
-            }
         }
+        UpdateIntentsUI();
     }
     public string GetBasicInfo()
     {
-        if (currentCombatSpace == null)
-        {
-            return $"{enemyName} at (null)";
-        }
-        return $"{enemyName} at {currentCombatSpace.gridPosition}";
+        return $"{enemyName}";
     }
     public Enemy GetBaseEnemy()
     {
@@ -221,26 +277,28 @@ public class EnemyInGame : MonoBehaviour
     {
         foreach (LimbRequirement requirement in limbRequirements)
         {
-            int numberOfLimbsMet = 0;
-            bool requirementMet = false;
-            foreach (LimbInGame limbInGame in currentLimbInGames)
-            {
-                if (limbInGame.IsOfType(requirement.limbTag))
-                {
-                    numberOfLimbsMet++;
-                    if (numberOfLimbsMet >= requirement.numberRequired)
-                    {
-                        requirementMet = true;
-                        break;
-                    }
-                }
-            }
-            if (!requirementMet)
+            if (!EnemyMeetsLimbRequirement(requirement))
             {
                 return false;
             }
         }
         return true;
+    }
+    public bool EnemyMeetsLimbRequirement(LimbRequirement limbRequirement)
+    {
+        int numberOfLimbsMet = 0;
+        foreach (LimbInGame limbInGame in currentLimbInGames)
+        {
+            if (limbInGame.IsOfType(limbRequirement.limbTag) && !limbInGame.IsDestroyed())
+            {
+                numberOfLimbsMet++;
+                if (numberOfLimbsMet >= limbRequirement.numberRequired)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     public void StartTurn()
     {
@@ -253,108 +311,73 @@ public class EnemyInGame : MonoBehaviour
     private IEnumerator ExecuteTurn()
     {
         executingTurn = true;
-        for (int i = 0; i < intents.Count; i++)
+        currentShield = 0; // this should be an animation
+        UpdateShield();
+        while (intents.Count > 0)
         {
-            switch (intents[i].GetIntentType())
+            /*switch (intents[0].GetIntentType())
             {
                 case IntentType.Attack:
-                    EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[i];
+                    EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[0];
                     StartAttack(enemyIntentAttack);
                 break;
-                case IntentType.Move:
-                    EnemyIntentMove enemyIntentMove = (EnemyIntentMove)intents[i];
-                    CombatSpace spaceToMoveTo = CombatArea.instance.GetRelativeSpace(currentCombatSpace, enemyIntentMove.directionToMove);
-                    if (spaceToMoveTo != null && !spaceToMoveTo.EnemyInSpace())
-                    {
-                        StartMove(spaceToMoveTo);
-                    }
-                    else
-                    {
-                        Logger.instance.Log($"{GetBasicInfo()} can't move {enemyIntentMove.directionToMove}");
-                    }
+                case IntentType.Shield:
+                    EnemyIntentShield enemyIntentShield = (EnemyIntentShield)intents[0];
+                    StartGainShield(enemyIntentShield);
                 break;
-            }
-            while (executingAction)
+                case IntentType.SelfBuff:
+                    EnemyIntentSelfBuff enemyIntentSelfBuff = (EnemyIntentSelfBuff)intents[0];
+                    StartGainSelfBuff(enemyIntentSelfBuff);
+                break;
+            }*/
+            _ = intents[0].ExecuteIntentAsync(this);
+            turnAbilityWasLastUsed[intents[0].enemyAbility] = CombatManager.instance.combatTurn;
+            while (intents[0].executingIntent)
             {
                 yield return null;
             }
-            intents[i].enemyIntentUI.RemoveIntent();
-            for (int j = i + 1; j < intents.Count; j++)
-            {
-                intents[j].enemyIntentUI.MoveLeft();
-            }
+            intents[0].enemyIntentUI.RetireIntent();
+            intents.RemoveAt(0);
+            UpdateIntentsUI();
         }
         executingTurn = false;
-    }
-    private void StartMove(CombatSpace destination)
-    {
-        currentCombatSpace.RemoveEnemyFromSpace();
-        StartCoroutine(MoveToCombatSpace(destination));
-    }
-    private IEnumerator MoveToCombatSpace(CombatSpace destinationSpace)
-    {
-        executingAction = true;
-        // rt.SetParent(CombatArea.instance.movingCharactersParent);
-        Vector2 origin = rt.anchoredPosition;
-        Vector2 destination = r.i.interf.GetCanvasPositionOfRectTransform(destinationSpace.GetRectTransform(), GameManager.instance.gameplayCanvas);
-        // destination += new Vector2(-spriteCenter.x * rt.localScale.x, -spriteCenter.y * rt.localScale.y);
-        float t = 0;
-        float moveTime = 1f;
-        while (t < moveTime)
-        {
-            t = Mathf.Clamp(t + Time.deltaTime * Preferences.instance.gameSpeed, 0f, moveTime);
-            float normalizedTime = t / moveTime;
-            rt.anchoredPosition = Vector2.Lerp(origin, destination, r.i.interf.animationCurve.Evaluate(normalizedTime));
-            yield return null;
-        }
-        destinationSpace.PlaceEnemyInSpace(this, false);
-        executingAction = false;
     }
     public void SetParent(RectTransform newParent)
     {
         // Logger.instance.Log($"Setting parent of {GetBasicInfo()} to {newParent}");
         rt.SetParent(newParent);
     }
-    public void StartAttack(EnemyIntentAttack enemyIntentAttack)
+    /*private void StartAttack(EnemyIntentAttack enemyIntentAttack)
     {
         StartCoroutine(Attack(enemyIntentAttack));
     }
     private IEnumerator Attack(EnemyIntentAttack enemyIntentAttack)
     {
         executingAction = true;
-/*        float t = 0;
-        float attackTime = 1f;
-        while (t < attackTime)
-        {
-            t = Mathf.Clamp(t + Time.deltaTime, 0f, attackTime);
-            yield return null;
-        }*/
         List<ActionAnimator> actionAnimators = new List<ActionAnimator>();
-        for (int i = 0; i < enemyIntentAttack.affectedColumns.Length; i++)
+        if (enemyIntentAttack.actionAnimation != null)
         {
-            Vector2Int targetArea = new Vector2Int(currentCombatSpace.gridPosition.x + enemyIntentAttack.affectedColumns[0], 0);
-            if (!CombatArea.instance.IsPositionInCombatArea(targetArea))
-            {
-                continue;
-            }
-            CombatSpace targetSpace = CombatArea.instance.GetCombatSpaceAtPosition(targetArea);
-            if (enemyIntentAttack.actionAnimation != null)
-            {
-                ActionAnimator actionAnimator = ActionAnimators.instance.StartActionAnimation(enemyIntentAttack.actionAnimation, r.i.interf.GetCanvasPositionOfRectTransform(targetSpace.rt, GameManager.instance.gameplayCanvas));
-                actionAnimators.Add(actionAnimator);
-            }
-            if (targetSpace == CombatArea.instance.GetPlayerSpace())
-            {
-                Player.instance.TakeDamage(enemyIntentAttack.damage);
-            }
+            ActionAnimator actionAnimator = ActionAnimators.instance.StartActionAnimation(enemyIntentAttack.actionAnimation, r.i.interf.GetCanvasPositionOfRectTransform(Player.instance.rt, GameManager.instance.gameplayCanvas));
+            actionAnimators.Add(actionAnimator);
         }
         while (ActionAnimatorInListStillRunning(actionAnimators))
         { 
             yield return null;
         }
+        Player.instance.TakeDamage(enemyIntentAttack.GetDamage(this));
         executingAction = false;
+    }*/
+    /*private void StartGainShield(EnemyIntentShield enemyIntentShield)
+    {
+        currentShield += enemyIntentShield.GetMagnitude(this);
+        UpdateShield();
+        // can do a little coroutine animation if we want here
     }
-    private bool ActionAnimatorInListStillRunning(List<ActionAnimator> actionAnimators)
+    private void StartGainSelfBuff(EnemyIntentSelfBuff enemyIntentSelfBuff)
+    {
+        statusEffects.AddStatus(enemyIntentSelfBuff.GetStatus(), enemyIntentSelfBuff.GetMagnitude(this));
+    }*/
+    /*private bool ActionAnimatorInListStillRunning(List<ActionAnimator> actionAnimators)
     {
         for (int i = 0; i < actionAnimators.Count; i++)
         {
@@ -364,5 +387,70 @@ public class EnemyInGame : MonoBehaviour
             }
         }
         return false;
+    }*/
+    public bool IsAbilityOffCooldown(EnemyAbility enemyAbility)
+    {
+        /*if (turnAbilityWasLastUsed.ContainsKey(enemyAbility))
+        {
+            Logger.instance.Log($"IsAbilityOffCooldown called for {enemyAbility.abilityName} of {enemyName} enemyAbility.cooldown: {enemyAbility.cooldown} turnAbilityWasLastUsed[enemyAbility]: {turnAbilityWasLastUsed[enemyAbility]}");
+        }
+        else
+        { 
+        
+        }*/
+        if (enemyAbility.cooldown == 0)
+        {
+            return true;
+        }
+        if (!turnAbilityWasLastUsed.ContainsKey(enemyAbility))
+        {
+            return true;
+        }
+        if (CombatManager.instance.combatTurn - turnAbilityWasLastUsed[enemyAbility] > enemyAbility.cooldown)
+        {
+            return true;
+        }
+        return false;
+    }
+    public List<LimbInGame> GetListOfDamagedLimbs() // returns null if all limbs fine
+    {
+        List<LimbInGame> damagedLimbs = new List<LimbInGame>();
+        for (int i = 0; i < limbInGames.Count; i++)
+        {
+            if (limbInGames[i].GetMissingHealth() > 0)
+            {
+                damagedLimbs.Add(limbInGames[i]);
+            }
+        }
+        return damagedLimbs;
+    }
+    public LimbInGame GetBestLimbToHeal()
+    {
+        List<LimbInGame> damagedLimbs = GetListOfDamagedLimbs();
+        if (damagedLimbs == null || damagedLimbs.Count == 0)
+        {
+            return null;
+        }
+        for (int i = 0; i < baseEnemy.abilities.Length; i++)
+        {
+            for (int j = 0; j < baseEnemy.abilities[i].limbRequirements.Length; j++)
+            {
+                if (!EnemyMeetsLimbRequirement(baseEnemy.abilities[i].limbRequirements[j]))
+                {
+                    for (int k = 0; k < damagedLimbs.Count; j++)
+                    {
+                        if (damagedLimbs[k].LimbCouldFulfilLimbRequirement(baseEnemy.abilities[i].limbRequirements[j]))
+                        { 
+                            return damagedLimbs[k];
+                        }
+                    }
+                }
+            }
+        }
+        damagedLimbs.Sort((x, y) =>
+        {
+            return x.GetMissingHealth() - y.GetMissingHealth();
+        });
+        return damagedLimbs[0];
     }
 }

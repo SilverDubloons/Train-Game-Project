@@ -7,26 +7,46 @@ public class EnemyIntentUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public RectTransform rt;
     [SerializeField] private GameObject visibilityObject;
     [SerializeField] private UnityEngine.UI.Image image;
+    [SerializeField] private Label label;
     private EnemyIntent enemyIntent;
     private List<TooltipData> tooltipDatas;
-
-    public void SetupIntentUI(EnemyIntent newEnemyIntent, int index, RectTransform newParent)
-    {
+    public float SetupIntentUI(EnemyIntent newEnemyIntent, RectTransform newParent, EnemyInGame enemyInGame)
+    {   // returns desired width
         SetVisibility(true);
         rt.SetParent(newParent);
-        rt.anchoredPosition = new Vector2(index * 10f, 0);
         enemyIntent = newEnemyIntent;
         image.sprite = newEnemyIntent.icon;
         tooltipDatas = newEnemyIntent.tooltipDatas;
         switch (enemyIntent.GetIntentType())
         {
             case IntentType.Attack:
-
+                EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)newEnemyIntent;
+                label.gameObject.SetActive(true);
+                label.ChangeText(enemyIntentAttack.GetDamage(enemyInGame).ToString());
             break;
-            case IntentType.Move:
-
+            case IntentType.Shield:
+                EnemyIntentShield enemyIntentShield = (EnemyIntentShield)newEnemyIntent;
+                label.gameObject.SetActive(true);
+                label.ChangeText(enemyIntentShield.GetMagnitude(enemyInGame).ToString());
+                break;
+            default:
+                label.gameObject.SetActive(false);
             break;
         }
+        return GetIntentWidth();
+    }
+    public float GetIntentWidth()
+    {
+        float intentWidth = 10f;
+        if (label.gameObject.activeSelf)
+        {
+            intentWidth += 2f + label.GetPreferredValuesString(9001f).x;
+        }
+        return intentWidth;
+    }
+    public void SetPosition(float x)
+    { 
+        rt.anchoredPosition = new Vector2(x, 0);
     }
     public void SetVisibility(bool visibile)
     { 
@@ -41,12 +61,8 @@ public class EnemyIntentUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     {
         Tooltip.instance.SetVisibility(false);
     }
-    public void RemoveIntent()
+    public void RetireIntent()
     {
-        CombatManager.instance.RetireEnemyIntentUI(this);
-    }
-    public void MoveLeft()
-    {
-        rt.anchoredPosition = rt.anchoredPosition - new Vector2(rt.sizeDelta.x + 2f, 0);
+        EnemyIntents.instance.RetireEnemyIntentUI(this);
     }
 }

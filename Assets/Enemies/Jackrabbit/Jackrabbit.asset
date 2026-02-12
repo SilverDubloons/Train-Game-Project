@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   enemyTag: Jackrabbit
   enemyName: Jackrabbit
-  maxHealth: 18
+  maxHealth: 30
   limbs:
   - limbName: Torso
     size: {x: 70, y: 53.5}
@@ -26,7 +26,7 @@ MonoBehaviour:
   - limbName: Tail
     size: {x: 29, y: 15}
     location: {x: -45.5, y: -19.5}
-    limbTags: 02000000
+    limbTags: 04000000
     sprite: {fileID: 21300000, guid: be76d9aaecb6f6e4daf5c71aca178e7f, type: 3}
     maxHealth: 5
     startingHealth: 5
@@ -53,10 +53,10 @@ MonoBehaviour:
     startingHealth: 5
   spriteCenter: {x: 4, y: 16.75}
   totalSize: {x: 128, y: 124.5}
-  spawningPattern: {fileID: 11400000, guid: ec8ae2f2405db5b4c82998a288a0493f, type: 2}
   crosshairColor: {r: 1, g: 1, b: 1, a: 1}
   abilities:
   - {fileID: 11400000, guid: 0abb48c7504abcb4c80ab78948373948, type: 2}
-  behavior: {fileID: 11400000, guid: 2263ba5c4cee39445b9ab8a5f7c89a3f, type: 2}
-  canMoveDiagonally: 0
-  prefersColumnForMovement: 1
+  - {fileID: 11400000, guid: 8b2333f7bf60aad46865fc693d2029e1, type: 2}
+  - {fileID: 11400000, guid: a6406fe58d664e74e939290204c51e71, type: 2}
+  - {fileID: 11400000, guid: 4e8ad62d0ff817f459ff1ac5226e3c84, type: 2}
+  behavior: {fileID: 11400000, guid: 92122ae876cb8ca419072145eb841a9d, type: 2}

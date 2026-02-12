@@ -34,7 +34,7 @@ public class GameplayMenu : MonoBehaviour
     public void Click_StartCombat()
     {
         MovingObjects.instance.mo["GameplayMenu"].StartMove("OffScreen");
-        MovingObjects.instance.mo["CombatArea"].StartMove("OnScreen");
+        // MovingObjects.instance.mo["CombatArea"].StartMove("OnScreen");
         MovingObjects.instance.mo["DrawPile"].StartMove("OnScreen");
         MovingObjects.instance.mo["DiscardPile"].StartMove("OnScreen");
         MovingObjects.instance.mo["EndTurnButtonBackdrop"].StartMove("OnScreen");
@@ -50,7 +50,7 @@ public class GameplayMenu : MonoBehaviour
     public void ClickEndCombat()
     {
         MovingObjects.instance.mo["GameplayMenu"].StartMove("OnScreen");
-        MovingObjects.instance.mo["CombatArea"].StartMove("OffScreen");
+        // MovingObjects.instance.mo["CombatArea"].StartMove("OffScreen");
         MovingObjects.instance.mo["DrawPile"].StartMove("OffScreen");
         MovingObjects.instance.mo["DiscardPile"].StartMove("OffScreen");
         MovingObjects.instance.mo["EndTurnButtonBackdrop"].StartMove("OffScreen");
@@ -58,7 +58,7 @@ public class GameplayMenu : MonoBehaviour
         MovingObjects.instance.mo["EndCombatButtonBackdrop"].StartMove("OffScreen");
         CombatManager.instance.CleanupCombat();
         HandArea.instance.ReturnCardsInHandToDrawPile();
-        endCombatButton.SetButtonEnabled(false);
+        // endCombatButton.SetButtonEnabled(false);
         GameDeck.instance.StartShuffleDiscardPileIntoDrawPile();
     }
     public void SetEndCombatButtonEnabled(bool enabled)

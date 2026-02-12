@@ -18,7 +18,8 @@ public enum Suit
     Club,
     Heart,
     Diamond,
-    Rainbow
+    Rainbow,
+    Undefined
 }
 public enum SpecialCardType
 {

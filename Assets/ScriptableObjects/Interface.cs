@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
@@ -28,7 +29,7 @@ public class Interface : ScriptableObject
     public Sprite[] detailSprites;
     public Vector2 selectedCardOffset;
     public float maxTooltipWidth;
-    public Sprite[] directionToMoveIcons; // none, then starting north and moving clockwise
+    // public Sprite[] directionToMoveIcons; // none, then starting north and moving clockwise
     public void InitialSetup()
     {
         SetupSuitOrderDictionary();
@@ -41,6 +42,7 @@ public class Interface : ScriptableObject
             suitOrderDict[suitOrder[i]] = i;
         }
     }
+
     public Vector2 GetMousePosition()
     {   // return mouse position in reference resolution space centered at (0,0)
         // i.e. bottom left is (-referenceResolution.x/2, -referenceResolution.y/2)
@@ -137,6 +139,25 @@ public class Interface : ScriptableObject
                 return -1;
         }
     }
+    public Suit IntToSuit(int i)
+    {
+        switch (i)
+        {
+            case 0:
+                return Suit.Spade;
+            case 1:
+                return Suit.Club;
+            case 2:
+                return Suit.Heart;
+            case 3:
+                return Suit.Diamond;
+            case 4:
+                return Suit.Rainbow;
+            default:
+                Logger.instance.Error($"IntToSuit called with i={i}");
+                return Suit.Undefined;
+        }
+    }
     public string ConvertIntegerToString(int val, bool capitalized = false)
     {
         string intString = "intError";
@@ -223,54 +244,6 @@ public class Interface : ScriptableObject
         // Logger.instance.Log($"Interface.IsPointInRectTransform: {rectTransform.name}, point: {point}, bottomLeft: {bottomLeft}, topRight: {topRight} FALSE");
         return false;
     }
-    public string ConvertDirectionToMoveToString(DirectionToMove directionToMove)
-    {
-        return directionToMove switch
-        {
-            DirectionToMove.None => "None",
-            DirectionToMove.Up => "Up",
-            DirectionToMove.UpRight => "Up & Right",
-            DirectionToMove.Right => "Right",
-            DirectionToMove.DownRight => "Down & Right",
-            DirectionToMove.Down => "Down",
-            DirectionToMove.DownLeft => "Down & Left",
-            DirectionToMove.Left => "Left",
-            DirectionToMove.UpLeft => "Up & Left",
-            _ => "ERROR",
-        };
-    }
-    public Sprite ConvertDirectionToMoveToSprite(DirectionToMove directionToMove)
-    {
-        return directionToMove switch
-        {
-            DirectionToMove.None => rankSprites[0],
-            DirectionToMove.Up => directionToMoveIcons[0],
-            DirectionToMove.UpRight => directionToMoveIcons[1],
-            DirectionToMove.Right => directionToMoveIcons[2],
-            DirectionToMove.DownRight => directionToMoveIcons[3],
-            DirectionToMove.Down => directionToMoveIcons[4],
-            DirectionToMove.DownLeft => directionToMoveIcons[5],
-            DirectionToMove.Left => directionToMoveIcons[6],
-            DirectionToMove.UpLeft => directionToMoveIcons[7],
-            _ => rankSprites[0],
-        };
-    }
-    public Vector2Int ConvertDirectionToMoveToVector2Int(DirectionToMove directionToMove)
-    {
-        return directionToMove switch
-        {
-            DirectionToMove.None => new Vector2Int(0, 0),
-            DirectionToMove.Up => new Vector2Int(0, 1),
-            DirectionToMove.UpRight => new Vector2Int(1, 1),
-            DirectionToMove.Right => new Vector2Int(1, 0),
-            DirectionToMove.DownRight => new Vector2Int(1, -1),
-            DirectionToMove.Down => new Vector2Int(0, -1),
-            DirectionToMove.DownLeft => new Vector2Int(-1, -1),
-            DirectionToMove.Left => new Vector2Int(-1, 0),
-            DirectionToMove.UpLeft => new Vector2Int(-1, 1),
-            _ => new Vector2Int(0, 0),
-        };
-    }
     public string ConvertAffectedColumnsToString(int[] affectedColumns)
     {
         if (affectedColumns.Length == 1)
@@ -289,5 +262,33 @@ public class Interface : ScriptableObject
             }
         }
         return "Unknown affected Columns";
+    }
+    public string ConvertStatusToString(Status status)
+    {
+        return status switch
+        {
+            Status.DamageBonus => "Strength",
+            Status.ShieldBonus => "Ward",
+            Status.Poison => "Poison",
+            _ => "ConvertStatusToString ERROR"
+        };
+    }
+    public List<TooltipData> ConvertStatusToTooltipDatas(Status status)
+    {
+        List<TooltipData> tooltipDatas = new List<TooltipData>();
+        tooltipDatas.Add(new TooltipData(ConvertStatusToString(status), UIElementType.tooltipName));
+        switch (status)
+        {
+            case Status.DamageBonus:
+                tooltipDatas.Add(new TooltipData("Increases damage of attacks", UIElementType.tooltipName));
+            break;
+            case Status.ShieldBonus:
+                tooltipDatas.Add(new TooltipData("Increases shield gain", UIElementType.tooltipName));
+            break;
+            case Status.Poison:
+                tooltipDatas.Add(new TooltipData("At end of turn, take one damage for each poison, then reduce poison by 1", UIElementType.tooltipName));
+            break;
+        }
+        return tooltipDatas;
     }
 }

@@ -60,11 +60,8 @@ MonoBehaviour:
     startingHealth: 4
   spriteCenter: {x: 0.25, y: -29.75}
   totalSize: {x: 193.5, y: 204.5}
-  spawningPattern: {fileID: 11400000, guid: efd1c754f37a09440892df466bc9d6ca, type: 2}
   crosshairColor: {r: 0.49685526, g: 0.49685526, b: 0.49685526, a: 1}
   abilities:
   - {fileID: 11400000, guid: 47a4ca5c1cc1b49458c7ae7ad215fe31, type: 2}
   - {fileID: 11400000, guid: fa59ddc4cc242d4489f73415122fb940, type: 2}
-  behavior: {fileID: 11400000, guid: 38c0ef4b0962a034ab80b8fad0135e86, type: 2}
-  canMoveDiagonally: 0
-  prefersColumnForMovement: 1
+  behavior: {fileID: 11400000, guid: c83ebc4f636a3f744b4cec7017bbd0f6, type: 2}

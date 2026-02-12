@@ -7,6 +7,10 @@ public class ThemedImage : MonoBehaviour
     private ThemeManager themeManager;
     void Start()
     {
+        if (themeManager == null)
+        {
+            themeManager = Resources.Load<ThemeManager>("ThemeManager");
+        }
         themeManager.OnThemeChanged += ApplyTheme;
         ApplyTheme();
     }

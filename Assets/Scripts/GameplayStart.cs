@@ -4,7 +4,7 @@ using Unity.Loading;
 
 public class GameplayStart : MonoBehaviour
 {
-    [SerializeField] private CombatArea combatArea;
+    // [SerializeField] private CombatArea combatArea;
     [SerializeField] private CombatManager combatManager;
     [SerializeField] private MovingObjects movingObjects;
     [SerializeField] private GameManager gameManager;
@@ -17,9 +17,11 @@ public class GameplayStart : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private ActionAnimators actionAnimators;
     [SerializeField] private GameplayMenu gameplayMenu;
+    [SerializeField] private StatusEffects statusEffects;
+    [SerializeField] private EnemyIntents enemyIntents;
     void Awake()
     {
-        combatArea.SetupInstance();
+        // combatArea.SetupInstance();
         combatManager.SetupInstance();
         movingObjects.SetupInstance();
         gameManager.SetupInstance();
@@ -32,6 +34,8 @@ public class GameplayStart : MonoBehaviour
         player.SetupInstance();
         actionAnimators.SetupInstance();
         gameplayMenu.SetupInstance();
+        statusEffects.SetupInstance();
+        enemyIntents.SetupInstance();
         
         bool loadingGame = false;
         if (loadingGame)
@@ -48,7 +52,7 @@ public class GameplayStart : MonoBehaviour
         }
         MovingObjects.instance.mo["GameplayMenu"].TeleportTo("OffScreen");
         MovingObjects.instance.mo["GameplayMenu"].StartMove("OnScreen");
-        MovingObjects.instance.mo["CombatArea"].TeleportTo("OffScreen");
+        // MovingObjects.instance.mo["CombatArea"].TeleportTo("OffScreen");
         MovingObjects.instance.mo["DrawPile"].TeleportTo("OffScreen");
         MovingObjects.instance.mo["DiscardPile"].TeleportTo("OffScreen");
         MovingObjects.instance.mo["EndTurnButtonBackdrop"].TeleportTo("OffScreen");

@@ -52,7 +52,7 @@ public class Backdrop : MonoBehaviour
                     shadow.sprite = style.shadow4;
                 }
                 rtShadow.sizeDelta = new Vector2(rtShadow.sizeDelta.x, 6f);
-                break;
+            break;
             case BackdropShape.corner8:
                 backdrop.sprite = style.backdrop8;
                 if (shadow != null)
@@ -60,7 +60,7 @@ public class Backdrop : MonoBehaviour
                     shadow.sprite = style.shadow8;
                 }
                 rtShadow.sizeDelta = new Vector2(rtShadow.sizeDelta.x, 10f);
-                break;
+            break;
         }
     }
     public void ApplyTheme()

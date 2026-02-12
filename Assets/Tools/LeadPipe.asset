@@ -22,4 +22,4 @@ MonoBehaviour:
   adjacentColumnsTarget: 0
   areaOfEffectRadius: 0
   damage: 4
-  toolSpecialTags: 01000000
+  toolSpecialTags: 

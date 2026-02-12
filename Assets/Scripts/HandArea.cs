@@ -67,6 +67,7 @@ public class HandArea : MonoBehaviour
         }
         GameDeck.instance.UpdateTopDeckCard();
         CombatManager.instance.SetCanEndTurn(true);
+        CardsInHandUpdated();
         drawingCards = false;
     }
     private void ReorganizeHand()
@@ -201,6 +202,16 @@ public class HandArea : MonoBehaviour
         }
         return cardsInHand;
     }
+    private List<CardData> GetCardDatasInHand()
+    {
+        List<Card> cardsInHand = GetCardsInHand();
+        List<CardData> cardDatasInHand = new List<CardData>();
+        foreach (Card card in cardsInHand)
+        {
+            cardDatasInHand.Add(card.cardData);
+        }
+        return cardDatasInHand;
+    }
     public bool CanSelectCards()
     { // this will return false if transitioning or using an ability, etc
         return true;
@@ -226,8 +237,6 @@ public class HandArea : MonoBehaviour
     private void SelectedCardsUpdated()
     {
         Tools.instance.DeterminePlayableTools(selectedCards);
-        List<CombatSpace> movableSpaces = GameManager.instance.GetSpacesPlayerCanMoveToByHand(selectedCards);
-        CombatArea.instance.SetMovableSpaces(movableSpaces);
     }
     public void HandPlayed()
     { 
@@ -239,6 +248,7 @@ public class HandArea : MonoBehaviour
         selectedCards.Clear();
         ReorganizeHand();
         SelectedCardsUpdated();
+        CardsInHandUpdated();
     }
     public void TurnEnded()
     {
@@ -254,6 +264,7 @@ public class HandArea : MonoBehaviour
         ReorganizeHand();
         selectedCards.Clear();
         SelectedCardsUpdated();
+        CardsInHandUpdated();
     }
     public void ReturnCardsInHandToDrawPile()
     {
@@ -269,5 +280,33 @@ public class HandArea : MonoBehaviour
         ReorganizeHand();
         selectedCards.Clear();
         SelectedCardsUpdated();
+    }
+    public void CardsInHandUpdated()
+    {
+        Tools.instance.DeterminePlayableToolsFromCardsInHand(GetCardsInHand());
+    }
+    public void SelectSpecificCards(List<Card> cardsToSelect)
+    {
+        List<Card> cardsInHand = GetCardsInHand();
+        foreach (Card card in cardsInHand)
+        {
+            if (cardsToSelect.Contains(card))
+            {
+                if (!selectedCards.Contains(card))
+                {
+                    card.CardSelected();
+                    selectedCards.Add(card);
+                }
+            }
+            else
+            {
+                if (selectedCards.Contains(card))
+                {
+                    card.CardDeselected();
+                    selectedCards.Remove(card);
+                }
+            }
+        }
+        Tools.instance.DeterminePlayableTools(null);
     }
 }
