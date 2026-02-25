@@ -1,14 +1,8 @@
-using JetBrains.Annotations;
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
-
 public class EnemyInGame : MonoBehaviour
 {
     public RectTransform rt;
@@ -124,33 +118,6 @@ public class EnemyInGame : MonoBehaviour
     {
         limbInGame.TakeDamage(damage);
     }
-    /*public void LimbDestroyed(LimbInGame limbInGame)
-    {
-        bool intentRemoved = false;
-        foreach (EnemyIntent intent in intents)
-        {
-            if (!intent.enemyAbility.GetLimbRequirementsMet(this))
-            {
-                intentRemoved = true;
-                intents.Remove(intent);
-            }
-        }
-        if (intentRemoved)
-        {
-            UpdateIntentsUI();
-        }
-    }*/
-    /*public void LimbDestroyed(LimbInGame limbInGame)
-    {
-        
-        int removedCount = intents.RemoveAll(intent =>
-            !intent.enemyAbility.GetLimbRequirementsMet(this));
-        Logger.instance.Log($"{limbInGame.limbName} of {GetBasicInfo()} destroyed removedCount={removedCount} intents.Count={intents.Count}");
-        if (removedCount > 0)
-        {
-            UpdateIntentsUI();
-        }
-    }*/
     public void LimbDestroyed(LimbInGame limbInGame)
     {
         var intentsToRemove = intents.Where(intent =>
@@ -195,12 +162,6 @@ public class EnemyInGame : MonoBehaviour
     {
         for (int i = 0; i < intents.Count; i++)
         {
-            /*switch (intents[i].GetIntentType())
-            {
-                case IntentType.Attack:
-                    EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[i];
-                break;
-            }*/
             intents[i].enemyIntentUI.RetireIntent();
         }
         intents.Clear();
@@ -315,21 +276,6 @@ public class EnemyInGame : MonoBehaviour
         UpdateShield();
         while (intents.Count > 0)
         {
-            /*switch (intents[0].GetIntentType())
-            {
-                case IntentType.Attack:
-                    EnemyIntentAttack enemyIntentAttack = (EnemyIntentAttack)intents[0];
-                    StartAttack(enemyIntentAttack);
-                break;
-                case IntentType.Shield:
-                    EnemyIntentShield enemyIntentShield = (EnemyIntentShield)intents[0];
-                    StartGainShield(enemyIntentShield);
-                break;
-                case IntentType.SelfBuff:
-                    EnemyIntentSelfBuff enemyIntentSelfBuff = (EnemyIntentSelfBuff)intents[0];
-                    StartGainSelfBuff(enemyIntentSelfBuff);
-                break;
-            }*/
             _ = intents[0].ExecuteIntentAsync(this);
             turnAbilityWasLastUsed[intents[0].enemyAbility] = CombatManager.instance.combatTurn;
             while (intents[0].executingIntent)
@@ -344,60 +290,10 @@ public class EnemyInGame : MonoBehaviour
     }
     public void SetParent(RectTransform newParent)
     {
-        // Logger.instance.Log($"Setting parent of {GetBasicInfo()} to {newParent}");
         rt.SetParent(newParent);
     }
-    /*private void StartAttack(EnemyIntentAttack enemyIntentAttack)
-    {
-        StartCoroutine(Attack(enemyIntentAttack));
-    }
-    private IEnumerator Attack(EnemyIntentAttack enemyIntentAttack)
-    {
-        executingAction = true;
-        List<ActionAnimator> actionAnimators = new List<ActionAnimator>();
-        if (enemyIntentAttack.actionAnimation != null)
-        {
-            ActionAnimator actionAnimator = ActionAnimators.instance.StartActionAnimation(enemyIntentAttack.actionAnimation, r.i.interf.GetCanvasPositionOfRectTransform(Player.instance.rt, GameManager.instance.gameplayCanvas));
-            actionAnimators.Add(actionAnimator);
-        }
-        while (ActionAnimatorInListStillRunning(actionAnimators))
-        { 
-            yield return null;
-        }
-        Player.instance.TakeDamage(enemyIntentAttack.GetDamage(this));
-        executingAction = false;
-    }*/
-    /*private void StartGainShield(EnemyIntentShield enemyIntentShield)
-    {
-        currentShield += enemyIntentShield.GetMagnitude(this);
-        UpdateShield();
-        // can do a little coroutine animation if we want here
-    }
-    private void StartGainSelfBuff(EnemyIntentSelfBuff enemyIntentSelfBuff)
-    {
-        statusEffects.AddStatus(enemyIntentSelfBuff.GetStatus(), enemyIntentSelfBuff.GetMagnitude(this));
-    }*/
-    /*private bool ActionAnimatorInListStillRunning(List<ActionAnimator> actionAnimators)
-    {
-        for (int i = 0; i < actionAnimators.Count; i++)
-        {
-            if (actionAnimators[i].animating)
-            {
-                return true;
-            }
-        }
-        return false;
-    }*/
     public bool IsAbilityOffCooldown(EnemyAbility enemyAbility)
     {
-        /*if (turnAbilityWasLastUsed.ContainsKey(enemyAbility))
-        {
-            Logger.instance.Log($"IsAbilityOffCooldown called for {enemyAbility.abilityName} of {enemyName} enemyAbility.cooldown: {enemyAbility.cooldown} turnAbilityWasLastUsed[enemyAbility]: {turnAbilityWasLastUsed[enemyAbility]}");
-        }
-        else
-        { 
-        
-        }*/
         if (enemyAbility.cooldown == 0)
         {
             return true;

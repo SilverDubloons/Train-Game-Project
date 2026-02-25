@@ -187,6 +187,7 @@ public class Label : MonoBehaviour
 			labelShadowRT.offsetMax = new Vector2(1f, -1f);
 			labelShadowRT.offsetMin = new Vector2(1f, -1f);
 			labelShadow.lineSpacing = 6.25f;
+			label.lineSpacing = 6.25f;
 
         }
 		else if(newFontSize == 16)
@@ -194,6 +195,7 @@ public class Label : MonoBehaviour
 			labelShadowRT.offsetMax = new Vector2(2f, -2f);
 			labelShadowRT.offsetMin = new Vector2(2f, -2f);
             labelShadow.lineSpacing = 12.5f;
+			label.lineSpacing = 12.5f;
         }
 	}
 	

@@ -40,6 +40,8 @@ public class CombatManager : MonoBehaviour
     {
         SetCanEndTurn(false);
         inCombat = true;
+        Tools.instance.SetToolsInteractability(false);
+        Tools.instance.SelectedCardsUpdated(0);
         combatTurn = 0;
         currentEnemiesInGame.Clear();
         for (int i = 0; i < encounter.enemies.Length; i++)
@@ -110,10 +112,10 @@ public class CombatManager : MonoBehaviour
                 targeting = false;
                 targetingTool.EndTargetPreview();
                 ToolInGame toolMouseIsOver = Tools.instance.GetToolInGameMouseIsOver();
-                if (toolMouseIsOver != null)
+                /*if (toolMouseIsOver != null)
                 {
                     toolMouseIsOver.PreviewSelectableTargets();
-                }
+                }*/
                 if (currentLimbMouseOver != null)
                 {
                     EnemyLimbMouseClick(currentLimbMouseOver, currentLimbMouseOver.parentEnemyInGame, targetingTool);
@@ -133,7 +135,10 @@ public class CombatManager : MonoBehaviour
         {
             case "Shield":
                 Player.instance.AddShield(toolInGame.GetImpact());
-            break;
+            break; 
+            case "SuperShield":
+                Player.instance.AddShield(toolInGame.GetImpact());
+             break;
         }
         HandArea.instance.HandPlayed();
     }

@@ -11,6 +11,14 @@ public class CardData
         this.suit = suit;
         this.specialCardType = specialCardType;
     }
+    public override string ToString()
+    {
+        if (isSpecialCard)
+        {
+            return specialCardType.ToString();
+        }
+        return r.i.interf.ConvertRankAndSuitToString(rank, suit);
+    }
 }
 public enum Suit
 {

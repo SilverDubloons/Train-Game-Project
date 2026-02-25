@@ -1,7 +1,8 @@
-using NUnit.Framework;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Tools : MonoBehaviour
 {
@@ -13,11 +14,15 @@ public class Tools : MonoBehaviour
     [SerializeField] private GameObject playableToolsVisibilityObject;
     [SerializeField] private RectTransform spareToolInGamesParent;
     [SerializeField] private GameObject toolInGamePrefab;
+    [SerializeField] private SlideOnMouseOver slideOnMouseOver;
+    [SerializeField] private GameObject clickAgainToConfirmVisibilityObject;
     private List<ToolInGame> playerTools = new List<ToolInGame>();
     private List<ToolInGame> playerPlayableTools = new List<ToolInGame>();
     private HandEvaluation handEvaluation;
     public static Tools instance;
-    public Dictionary<HandType, List<Card>> cardsForEachHandType = new Dictionary<HandType, List<Card>>();
+    private Dictionary<HandType, List<Card>> cardsForEachHandType = new Dictionary<HandType, List<Card>>();
+    private IEnumerator waitForTargetOfSelectedToolCoroutine;
+    private bool waitingForTargetOfSelectedTool;
     public void SetupInstance()
     {
         instance = this;
@@ -26,6 +31,7 @@ public class Tools : MonoBehaviour
         {
             AddNewTool(r.i.tools[i]);
         }
+        SelectedCardsUpdated(0);
     }
     public void SetToolsVisibility(bool visible)
     {
@@ -39,13 +45,13 @@ public class Tools : MonoBehaviour
     {
         foreach (ToolInGame tool in playerTools)
         {
-            if (!interactable)
+            if (!interactable || !CombatManager.instance.inCombat)
             {
                 tool.SetInteractability(interactable);
             }
             else
-            { 
-            
+            {
+                tool.SetInteractabilityBasedOnAvailability();
             }
         }
     }
@@ -91,7 +97,7 @@ public class Tools : MonoBehaviour
         toolInGame.SetVisibility(false);
         toolInGame.rt.SetParent(spareToolInGamesParent);
     }
-    public void DeterminePlayableTools(List<Card> selectedCards)
+    public void DeterminePlayableToolsFromSelectedCards(List<Card> selectedCards)
     {
         if (selectedCards == null || selectedCards.Count <= 0)
         {
@@ -163,10 +169,23 @@ public class Tools : MonoBehaviour
     }
     public void DeterminePlayableToolsFromCardsInHand(List<Card> hand)
     {
+        Logger.instance.Log($"DeterminePlayableToolsFromCardsInHand");
         cardsForEachHandType.Clear();
+        foreach (ToolInGame toolInGame in playerTools)
+        {
+            toolInGame.SetCardsToSelectIfClicked(null);
+        }
         if (hand == null || hand.Count == 0)
         {
             // disable interactability for all tools
+            if(hand == null)
+            {
+                Logger.instance.Log($"Hand is null");
+            }
+            else if(hand.Count == 0)
+            {
+                Logger.instance.Log($"Hand is empty");
+            }
             return;
         }
         Dictionary<int, List<Card>> cardsByRank = new Dictionary<int, List<Card>>();
@@ -191,34 +210,67 @@ public class Tools : MonoBehaviour
         ProcessXOfAKind(rankedGroups, hand.Count);
         ProcessHouseHands(rankedGroups, hand.Count);
         ProcessPairHands(rankedGroups, hand.Count);
+        List<Card> cardsOfMostCommonSuit = new List<Card>();
+        foreach (KeyValuePair<Suit, List<Card>> kvp in cardsBySuit)
+        {
+            if (kvp.Key != Suit.Rainbow && kvp.Value.Count > cardsOfMostCommonSuit.Count)
+            {
+                cardsOfMostCommonSuit = kvp.Value;
+            }
+        }
+        if(cardsBySuit.ContainsKey(Suit.Rainbow) && cardsBySuit[Suit.Rainbow].Count > 0)
+        {
+            cardsOfMostCommonSuit.AddRange(cardsBySuit[Suit.Rainbow]);
+        }
         foreach (ToolInGame toolInGame in playerTools)
         {
+            toolInGame.SetCardsToSelectIfClicked(null);
             if (toolInGame.handType == HandType.Straight)
             {
-                /*StraightDetector straightDetector = new StraightDetector();
-                List<StraightInfo> possibleStraights = straightDetector.FindAllStraights(
+                StraightFinder straightFinder = new StraightFinder();
+                List<Card> straightCards = straightFinder.GetAppropriateStraight(
                     hand,
-                    GameManager.instance.GetMaxGapInStraights(),
                     toolInGame.cardsRequired,
                     toolInGame.cardsRequired,
-                    GameManager.instance.GetCanStraightsWrap()
+                    GameManager.instance.GetCanStraightsWrap(),
+                    GameManager.instance.GetMaxGapLengthInStraights(),
+                    GameManager.instance.GetMaxGapsInStraights(),
+                    false
                 );
-                if (possibleStraights.Any())
+                toolInGame.SetCardsToSelectIfClicked(straightCards);
+                if (straightCards == null)
                 {
-                    toolInGame.SetCardsToSelectIfClicked(possibleStraights.First().Cards);
+                    continue;
+                }
+                for ( int i = 0; i < straightCards.Count; i++)
+                {
+                    Logger.instance.Log($"Straight card {i}: {straightCards[i].cardData.ToString()}");
+                }
+            }
+            else if (toolInGame.handType == HandType.StraightFlush)
+            {
+                StraightFinder straightFinder = new StraightFinder();
+                List<Card> straightFlushCards = straightFinder.GetAppropriateStraight(
+                    hand,
+                    toolInGame.cardsRequired,
+                    toolInGame.cardsRequired,
+                    GameManager.instance.GetCanStraightsWrap(),
+                    GameManager.instance.GetMaxGapLengthInStraights(),
+                    GameManager.instance.GetMaxGapsInStraights(),
+                    true
+                );
+                toolInGame.SetCardsToSelectIfClicked(straightFlushCards);
+            }
+            else if (toolInGame.handType == HandType.Flush)
+            {
+                if(cardsOfMostCommonSuit.Count >= toolInGame.cardsRequired)
+                {
+                    toolInGame.SetCardsToSelectIfClicked(cardsOfMostCommonSuit.Take(toolInGame.cardsRequired).ToList());
                 }
                 else
                 {
                     toolInGame.SetCardsToSelectIfClicked(null);
-                }*/
-            }
-            else if (toolInGame.handType == HandType.StraightFlush)
-            {
-
-            }
-            else if (toolInGame.handType == HandType.Flush)
-            {
-
+                }
             }
             else
             {
@@ -231,6 +283,10 @@ public class Tools : MonoBehaviour
                     toolInGame.SetCardsToSelectIfClicked(null);
                 }
             }
+        }
+        if(MovingObjects.instance.mo["Tools"].GetCurrentLocation() == "OnScreen")
+        {
+            SetToolsInteractability(true);
         }
     }
     private void ProcessXOfAKind(List<KeyValuePair<int, List<Card>>> rankedGroups, int handSize)
@@ -356,6 +412,71 @@ public class Tools : MonoBehaviour
         if (handSize >= 2 && rankedGroups[0].Value.Count >= 2)
         {
             cardsForEachHandType[HandType.OnePair] = rankedGroups[0].Value.Take(2).ToList();
+        }
+    }
+    public void SelectedCardsUpdated(int numberOfSelectedCards)
+    {
+        if (numberOfSelectedCards <= 0 || !CombatManager.instance.inCombat)
+        {
+            // Logger.instance.Log($"SelectedCardsUpdated numberOfSelectedCards={numberOfSelectedCards}, inCombat={CombatManager.instance.inCombat}, setting TRUE");
+            slideOnMouseOver.SetInteractability(true);
+            MovingObjects.instance.mo["Tools"].StartMove("OffScreenWithTab");
+        }
+        else
+        {
+            // Logger.instance.Log($"SelectedCardsUpdated numberOfSelectedCards={numberOfSelectedCards}, inCombat={CombatManager.instance.inCombat}, setting FALSE");
+            slideOnMouseOver.SetInteractability(false);
+            MovingObjects.instance.mo["Tools"].StartMove("OffScreen");
+        }
+    }
+    public void AvailableToolSelected(ToolInGame selectedTool)
+    { 
+        if (waitingForTargetOfSelectedTool)
+        {
+            StopCoroutine(waitForTargetOfSelectedToolCoroutine);
+        }
+        waitForTargetOfSelectedToolCoroutine = WaitForTargetOfSelectedTool(selectedTool);
+        StartCoroutine(waitForTargetOfSelectedToolCoroutine);
+    }
+    private IEnumerator WaitForTargetOfSelectedTool(ToolInGame selectedTool)
+    {
+        waitingForTargetOfSelectedTool = true;
+        if (selectedTool.GetToolTargetStyle() == ToolTargetStyle.Self)
+        {
+            clickAgainToConfirmVisibilityObject.SetActive(true);
+        }
+        else
+        {
+            bool aiming = selectedTool.HasSpecialTag(ToolSpecialTag.AlwaysAim);
+            CombatManager.instance.SetTargetingTool(selectedTool, aiming);
+        }
+        while (waitingForTargetOfSelectedTool)
+        {
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                ToolInGame toolMouseIsOver = GetToolInGameMouseIsOver();
+                if (toolMouseIsOver == selectedTool)
+                {
+                    if (selectedTool.GetToolTargetStyle() == ToolTargetStyle.Self)
+                    {
+                        CombatManager.instance.ApplySelfTool(selectedTool);
+                    }
+                }
+                else if (toolMouseIsOver != null)
+                {
+                    // clicked on a different tool, make that the new selected tool
+
+                }
+                else
+                {
+                    // clicked somewhere that is not a tool, check if it's a valid target and if so use the tool on that target
+                    // if it's not a valid target, deselect the tool
+
+                }
+                clickAgainToConfirmVisibilityObject.SetActive(false);
+                waitingForTargetOfSelectedTool = false;
+            }
+            yield return null;
         }
     }
 }

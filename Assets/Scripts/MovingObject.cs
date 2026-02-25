@@ -87,7 +87,7 @@ public class MovingObject : MonoBehaviour
 				return entry.Key;
 			}
 		}
-		Logger.instance.Error($"Could not get current location of moving object with referenceName {referenceName}");
+		Logger.instance.Warning($"Could not get current location of moving object with referenceName {referenceName}");
 		return null;
 	}
 	

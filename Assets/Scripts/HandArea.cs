@@ -236,7 +236,8 @@ public class HandArea : MonoBehaviour
     }
     private void SelectedCardsUpdated()
     {
-        Tools.instance.DeterminePlayableTools(selectedCards);
+        Tools.instance.DeterminePlayableToolsFromSelectedCards(selectedCards);
+        Tools.instance.SelectedCardsUpdated(selectedCards.Count);
     }
     public void HandPlayed()
     { 
@@ -283,6 +284,7 @@ public class HandArea : MonoBehaviour
     }
     public void CardsInHandUpdated()
     {
+        Logger.instance.Log($"CardsInHandUpdated");
         Tools.instance.DeterminePlayableToolsFromCardsInHand(GetCardsInHand());
     }
     public void SelectSpecificCards(List<Card> cardsToSelect)
@@ -307,6 +309,6 @@ public class HandArea : MonoBehaviour
                 }
             }
         }
-        Tools.instance.DeterminePlayableTools(null);
+        Tools.instance.DeterminePlayableToolsFromSelectedCards(null);
     }
 }

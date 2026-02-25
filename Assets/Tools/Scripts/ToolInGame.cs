@@ -36,6 +36,17 @@ public class ToolInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         buttonPlus.SetButtonEnabled(interactable);
     }
+    public void SetInteractabilityBasedOnAvailability()
+    {
+        if (cardsToSelectIfClicked != null && cardsToSelectIfClicked.Count > 0)
+        {
+            SetInteractability(true);
+        }
+        else
+        {
+            SetInteractability(false);
+        }
+    }
     public void SetupNewToolInGame(Tool newBaseTool)
     {
         baseToolInGame = null;
@@ -88,7 +99,18 @@ public class ToolInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         }
         else if (isBase)
         {
-            HandArea.instance.SelectSpecificCards(cardsToSelectIfClicked);
+            if (CombatManager.instance.inCombat)
+            {
+                HandArea.instance.SelectSpecificCards(cardsToSelectIfClicked);
+                Tools.instance.AvailableToolSelected(this);
+                // bool aiming = HasSpecialTag(ToolSpecialTag.AlwaysAim);
+                // CombatManager.instance.SetTargetingTool(this, aiming);
+            }
+            else
+            {
+                Logger.instance.Log("Open context menu");
+                
+            }
         }
     }
     public void OnPointerEnter(PointerEventData pointerEventData)
@@ -200,6 +222,7 @@ public class ToolInGame : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if (cards == null)
         {
+            cardsToSelectIfClicked = null;
             SetInteractability(false);
             return;
         }

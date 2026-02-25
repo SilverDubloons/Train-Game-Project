@@ -242,11 +242,13 @@ public class Card : MonoBehaviour, IPointerClickHandler
     {
         cardData.rank = newRank;
         UpdateGraphics();
+        HandArea.instance.CardsInHandUpdated();
     }
     private void ChangeSuit(Suit newSuit)
     { 
         cardData.suit = newSuit;
         UpdateGraphics();
+        HandArea.instance.CardsInHandUpdated();
     }
     public void CardSelected()
     {

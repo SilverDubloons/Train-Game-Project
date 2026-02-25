@@ -523,7 +523,7 @@ public class HandEvaluation
                     flushToCheck.Add(hand[j]);
                 }
             }
-            List<CardData> straightFlushCardsToCheck = DoesHandContainStraight(flushToCheck, GameManager.instance.GetMaxGapInStraights(), hand.Count, GameManager.instance.GetCanStraightsWrap());
+            List<CardData> straightFlushCardsToCheck = DoesHandContainStraight(flushToCheck, GameManager.instance.GetMaxGapLengthInStraights(), hand.Count, GameManager.instance.GetCanStraightsWrap());
             if (straightFlushCardsToCheck != null)
             {
                 straightFlush = true;
@@ -542,7 +542,7 @@ public class HandEvaluation
             straightFlushCards = straightFlushes[0];
         }
         bool straight = false;
-        List<CardData> straightCards = DoesHandContainStraight(hand, GameManager.instance.GetMaxGapInStraights(), hand.Count, GameManager.instance.GetCanStraightsWrap());
+        List<CardData> straightCards = DoesHandContainStraight(hand, GameManager.instance.GetMaxGapLengthInStraights(), hand.Count, GameManager.instance.GetCanStraightsWrap());
         if (straightCards != null)
         {
             straight = true;
